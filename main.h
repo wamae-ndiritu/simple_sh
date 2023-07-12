@@ -43,7 +43,7 @@ typedef struct Command
 
 extern char **environ;
 
-void print_env(void);
+void print_env(char **env);
 env_var *get_env(char *variable);
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
 custom_args *init_argv(char *lineptr, env_var *path);
@@ -66,4 +66,7 @@ void free_struct(custom_args *argv, env_var *path);
 void signal_handler(int signum);
 char *find_path(char *path_cpy, env_var *var, char *filename);
 char *find_executable(env_var *var, char *filename);
+
+void _setenv(char *variable, char *value);
+void _unsetenv(char *variable);
 #endif

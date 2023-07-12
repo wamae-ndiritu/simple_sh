@@ -9,9 +9,8 @@
  * Return: Nothing.
  */
 
-void print_env(void)
+void print_env(char **env)
 {
-	char **env = environ;
 	int variable_len;
 
 	while (*env != NULL)

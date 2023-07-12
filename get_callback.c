@@ -14,6 +14,8 @@ void (*get_callback(char *command))(char **)
 {
 	Command commandList[] = {
 		{"env", (void (*)(char **))print_env},
+		/*{"setenv", (void (*)(char **))_setenv},*/
+		/*{"unsetenv", (void (*)(char **))_unsetenv},*/
 		{NULL, NULL}
 	};
 	int i = 0;
