@@ -3,15 +3,20 @@
 #include "main.h"
 /**
  * _setenv - initializes a new environment variable, or modify existing one
- * @variable: the name of the environment variable to set
- * @value: value of the environment variable
- *
+ * @args: argument passed
  * Return: 0 onsuccess, -1 on failure
  */
-void _setenv(char *variable, char *value)
+void _setenv(char **args)
 {
 	int result;
+	char *variable = args[0];
+	char *value = args[1];
 
+	if (args[0] == NULL || args[1] == NULL)
+	{
+		write(STDERR_FILENO, "Missing arguments for setenv\n", 28);
+		return;
+	}
 	/*set the env var*/
 	result = setenv(variable, value, 1);
 	/*check if operation was successful*/
@@ -25,12 +30,13 @@ void _setenv(char *variable, char *value)
 }
 /**
  * _unsetenv - remove an env variable
- * @variable: name of variable to unset
+ * @args: argument passed
  * Return: 0 on success -1 on failure
  */
-void _unsetenv(char *variable)
+void _unsetenv(char **args)
 {
 	int result;
+	char *variable = args[0];
 
 	/* Unset the environment variable. */
 	result = unsetenv(variable);

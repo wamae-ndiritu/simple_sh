@@ -67,6 +67,6 @@ void signal_handler(int signum);
 char *find_path(char *path_cpy, env_var *var, char *filename);
 char *find_executable(env_var *var, char *filename);
 
-void _setenv(char *variable, char *value);
-void _unsetenv(char *variable);
+void _setenv(char **args);
+void _unsetenv(char **args);
 #endif

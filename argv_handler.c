@@ -36,7 +36,7 @@ custom_args *init_argv(char *lineptr, env_var *path)
 {
 	void (*result)(char **);
 	char *token_arg, *lineptr_cpy = NULL;
-	char **argv, **env = environ;
+	char **argv; /**env = environ;*/
 	int ac = 0, i = 0;
 	custom_args *frees;
 
@@ -69,8 +69,7 @@ custom_args *init_argv(char *lineptr, env_var *path)
 
 	result = get_callback(argv[0]);
 	if (result != NULL)
-		result(env);
-
+		result(argv);
 	frees->lineptr_cpy = lineptr_cpy;
 	frees->argv = argv;
 	return (frees);

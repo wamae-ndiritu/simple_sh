@@ -13,6 +13,7 @@ void print_env(char **env)
 {
 	int variable_len;
 
+	env = environ;
 	while (*env != NULL)
 	{
 		variable_len = _strlen(*env) + 1;
