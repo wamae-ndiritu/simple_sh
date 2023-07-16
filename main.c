@@ -92,6 +92,14 @@ char *execute_file(char *lineptr, char *argV[])
 		return (filepath);
 	}
 	result(argv->argv);
+	free(argv->lineptr_cpy);
+	argv->lineptr_cpy = NULL;
+	free(argv->argv);
+	argv->argv = NULL;
+	free(argv);
+	free(path->key);
+	path->key = NULL;
+	free(path);
 	return (filepath);
 }
 

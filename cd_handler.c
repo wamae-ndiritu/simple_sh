@@ -57,6 +57,9 @@ void change_directory(char **argv)
 		write(1, "\n", 2);
 		if (chdir(old_pwd->value) != 0)
 			perror("cd");
+		free(old_pwd->key);
+		old_pwd->key = NULL;
+		free(old_pwd);
 	}
 	else
 	{
@@ -70,9 +73,12 @@ void change_directory(char **argv)
 		setenv("OLDPWD", old_pwd->value, 1);
 	}
 	else
-	{
-		printf("error coming ...\n");
 		perror("getcwd");
-	}
+	free(env->key);
+	env->key = NULL;
+	free(env);
+	free(old_pwd->key);
+	old_pwd->key = NULL;
+	free(old_pwd);
 
 }
