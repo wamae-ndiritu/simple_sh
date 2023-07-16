@@ -60,6 +60,7 @@ char *execute_file(char *lineptr, char *argV[])
 	char *filepath;
 	env_var *path;
 	custom_args *argv;
+	void (*result)(char **);
 
 	path = get_env("PATH");
 	if (path == NULL)
@@ -72,6 +73,9 @@ char *execute_file(char *lineptr, char *argV[])
 		free(path);
 		return (NULL);
 	}
+	result = get_callback(argv->argv[0]);
+	if (result != NULL)
+		result(argv->argv);
 	filepath = find_executable(path, argv->argv[0]);
 	if (filepath == NULL)
 	{
@@ -91,12 +95,12 @@ char *execute_file(char *lineptr, char *argV[])
 /**
  * main - main entry point of the shell program
  * @ac: count of command line arguments
- * @argv: pointer to an array of arguments passed
+ * @argV: pointer to an array of arguments passed
  *
  * Return: Always 0.
  */
 
-int main(int ac, char *argv[])
+int main(int ac, char *argV[])
 {
 	char *lineptr, *memory;
 	size_t n = 0;
@@ -126,7 +130,7 @@ int main(int ac, char *argv[])
 		else
 		{
 			lineptr[num_char_read - 1] = '\0';
-			memory = execute_file(lineptr, argv);
+			memory = execute_file(lineptr, argV);
 			if (memory == NULL)
 			{
 				exit_status = 1;

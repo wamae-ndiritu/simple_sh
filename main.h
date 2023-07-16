@@ -69,4 +69,5 @@ char *find_executable(env_var *var, char *filename);
 
 void _setenv(char **args);
 void _unsetenv(char **args);
+void change_directory(char **argv);
 #endif

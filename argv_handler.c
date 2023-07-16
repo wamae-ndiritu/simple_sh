@@ -34,10 +34,10 @@ int count_args(char *lineptr)
  */
 custom_args *init_argv(char *lineptr, env_var *path)
 {
-	void (*result)(char **);
+	/*void (*result)(char **);*/
 	char *token_arg, *lineptr_cpy = NULL;
 	char **argv; /**env = environ;*/
-	int ac = 0, i = 0;
+	int ac, i = 0;
 	custom_args *frees;
 
 	frees = malloc(sizeof(custom_args));
@@ -66,10 +66,9 @@ custom_args *init_argv(char *lineptr, env_var *path)
 		free(frees);
 		handle_exit(argv, lineptr, lineptr_cpy, path);
 	}
-
-	result = get_callback(argv[0]);
-	if (result != NULL)
-		result(argv);
+	/*result = get_callback(argv[0]);*/
+	/*if (result != NULL)*/
+		/*result(argv);*/
 	frees->lineptr_cpy = lineptr_cpy;
 	frees->argv = argv;
 	return (frees);

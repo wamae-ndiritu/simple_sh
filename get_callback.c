@@ -13,9 +13,10 @@
 void (*get_callback(char *command))(char **)
 {
 	Command commandList[] = {
-		{"env", (void (*)(char **))print_env},
-		{"setenv", (void (*)(char **))_setenv},
-		{"unsetenv", (void (*)(char **))_unsetenv},
+		{"env", print_env},
+		{"setenv", _setenv},
+		{"unsetenv", _unsetenv},
+		{"cd", change_directory},
 		{NULL, NULL}
 	};
 	int i = 0;
