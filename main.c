@@ -57,7 +57,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 
 char *execute_file(char *lineptr, char *argV[])
 {
-	char *filepath;
+	char *filepath = NULL;
 	env_var *path;
 	custom_args *argv;
 	void (*result)(char **);
@@ -74,21 +74,24 @@ char *execute_file(char *lineptr, char *argV[])
 		return (NULL);
 	}
 	result = get_callback(argv->argv[0]);
-	if (result != NULL)
-		result(argv->argv);
-	filepath = find_executable(path, argv->argv[0]);
-	if (filepath == NULL)
+	if (result == NULL)
 	{
-		print_err(argV[0]);
-		free(argv->lineptr_cpy);
-		free(argv->argv);
-		free(argv);
-		return (NULL);
+		filepath = find_executable(path, argv->argv[0]);
+			if (filepath == NULL)
+			{
+				print_err(argV[0]);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
+				return (NULL);
+			}
+		argv->argv[0] = filepath;
+		filepath = execute_helper(argv, path, argV);
+		if (filepath == NULL)
+			return (NULL);
+		return (filepath);
 	}
-	argv->argv[0] = filepath;
-	filepath = execute_helper(argv, path, argV);
-	if (filepath == NULL)
-		return (NULL);
+	result(argv->argv);
 	return (filepath);
 }
 

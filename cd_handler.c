@@ -4,6 +4,24 @@
 #include <stdlib.h>
 
 /**
+ * get_argv_count - get the number of arguments in argv
+ * @argv: pointer to an array of arguments passed
+ * Return: returns the argument count
+ */
+
+int get_argv_count(char **argv)
+{
+	int i = 0, ac = 0;
+
+	while (argv[i] != NULL)
+	{
+		ac++;
+		i++;
+	}
+	return (ac);
+}
+
+/**
  * change_directory - changes the working directory
  * @argv: pointer to an array of arguments
  *
@@ -13,15 +31,19 @@
 void change_directory(char **argv)
 {
 	char current_dir[1024];
-	env_var *env = get_env("HOME");
+	env_var *old_pwd = get_env("PWD"), *env = get_env("HOME");
 	char *home;
+	int ac;
 
 	home = env->value;
-	if (_strcmp(argv[1], "~") == 0 || _strcmp(argv[1], "") == 0)
+	ac = get_argv_count(argv);
+	if (ac == 1)
 	{
-		env_var *pwd = get_env("PWD");
-
-		printf("PWD_1: %s\n", pwd->value);
+		if (chdir(home) != 0)
+			perror("cd");
+	}
+	else if (_strcmp(argv[1], "~") == 0 || _strcmp(argv[1], "") == 0)
+	{
 		if (chdir(home) != 0)
 			perror("cd");
 	}
@@ -31,6 +53,8 @@ void change_directory(char **argv)
 
 		if (old_pwd->value == NULL)
 			return;
+		write(1, old_pwd->value, _strlen(old_pwd->value));
+		write(1, "\n", 2);
 		if (chdir(old_pwd->value) != 0)
 			perror("cd");
 	}
@@ -41,8 +65,14 @@ void change_directory(char **argv)
 	}
 	
 	if (getcwd(current_dir, sizeof(current_dir)) != NULL)
+	{
 		setenv("PWD", current_dir, 1);
+		setenv("OLDPWD", old_pwd->value, 1);
+	}
 	else
+	{
+		printf("error coming ...\n");
 		perror("getcwd");
+	}
 
 }
