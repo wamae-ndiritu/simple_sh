@@ -8,7 +8,6 @@
  * @argv: pointer to an array of arguments passed
  * Return: returns the argument count
  */
-
 int get_argv_count(char **argv)
 {
 	int i = 0, ac = 0;
@@ -22,12 +21,28 @@ int get_argv_count(char **argv)
 }
 
 /**
+ * change_directory_helper - function to free resources in change_directory
+ * @old_pwd: Pointer to the env_var structure containing old PWD value.
+ */
+void change_directory_helper(env_var *old_pwd)
+{
+	if (old_pwd->value == NULL)
+		return;
+	write(1, old_pwd->value, _strlen(old_pwd->value));
+	write(1, "\n", 2);
+	if (chdir(old_pwd->value) != 0)
+		perror("cd");
+	free(old_pwd->key);
+	old_pwd->key = NULL;
+	free(old_pwd);
+}
+
+/**
  * change_directory - changes the working directory
  * @argv: pointer to an array of arguments
  *
  * Return: Nothing.
  */
-
 void change_directory(char **argv)
 {
 	char current_dir[1024];
@@ -51,22 +66,14 @@ void change_directory(char **argv)
 	{
 		env_var *old_pwd = get_env("OLDPWD");
 
-		if (old_pwd->value == NULL)
-			return;
-		write(1, old_pwd->value, _strlen(old_pwd->value));
-		write(1, "\n", 2);
-		if (chdir(old_pwd->value) != 0)
-			perror("cd");
-		free(old_pwd->key);
-		old_pwd->key = NULL;
-		free(old_pwd);
+		change_directory_helper(old_pwd);
 	}
 	else
 	{
 		if (chdir(argv[1]) != 0)
 			perror("cd");
 	}
-	
+
 	if (getcwd(current_dir, sizeof(current_dir)) != NULL)
 	{
 		setenv("PWD", current_dir, 1);
@@ -75,16 +82,7 @@ void change_directory(char **argv)
 	else
 		perror("getcwd");
 	free(env->key);
-	env->key = NULL;
 	free(env);
 	free(old_pwd->key);
-	old_pwd->key = NULL;
 	free(old_pwd);
-
-	free(old_pwd->key);
-	old_pwd->key = NULL;
-	free(old_pwd);
-	free(env->key);
-	free(env);
-
 }

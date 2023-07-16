@@ -45,16 +45,13 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 	}
 	return (filepath);
 }
-
 /**
- * execute_file - helper function to call execve sys call
- * @lineptr: pointer to string passed as args
- *      terminal
- * @argV: pointer to the command line arguments passed to main
- * Return: returns struct mem, containing memory blocks
- *      to be freed
+ * execute_file - Executes the file specified in lineptr.
+ * @lineptr: Pointer to the string representing the file path.
+ * @argV: Pointer to the command line arguments passed to main.
+ *
+ * Return: The file path on success, or NULL on failure.
  */
-
 char *execute_file(char *lineptr, char *argV[])
 {
 	char *filepath = NULL;
@@ -68,39 +65,45 @@ char *execute_file(char *lineptr, char *argV[])
 	argv = init_argv(lineptr, path);
 	if (argv == NULL)
 	{
-		free(path->key);
-		free(path->value);
-		free(path);
+		free_resources(path, argv);
 		return (NULL);
 	}
 	result = get_callback(argv->argv[0]);
 	if (result == NULL)
 	{
 		filepath = find_executable(path, argv->argv[0]);
-			if (filepath == NULL)
-			{
-				print_err(argV[0]);
-				free(argv->lineptr_cpy);
-				free(argv->argv);
-				free(argv);
-				return (NULL);
-			}
+		if (filepath == NULL)
+		{
+			print_err(argV[0]);
+			free_resources(path, argv);
+			return (NULL);
+		}
 		argv->argv[0] = filepath;
 		filepath = execute_helper(argv, path, argV);
 		if (filepath == NULL)
+		{
+			free_resources(path, argv);
 			return (NULL);
+		}
 		return (filepath);
 	}
 	result(argv->argv);
+	free_resources(path, argv);
+	return (filepath);
+}
+
+/**
+ * free_resources - Frees the allocated resources.
+ * @path: Pointer to the env_var structure.
+ * @argv: Pointer to the custom_args structure.
+ */
+void free_resources(env_var *path, custom_args *argv)
+{
 	free(path->key);
-	path->key = NULL;
 	free(path);
 	free(argv->lineptr_cpy);
-	argv->lineptr_cpy = NULL;
 	free(argv->argv);
-	argv->argv = NULL;
 	free(argv);
-	return (filepath);
 }
 
 /**

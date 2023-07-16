@@ -16,7 +16,8 @@
  * Return: Nothing.
  */
 
-void free_exit_mem(char **argv, char *lineptr, char *lineptr_cpy, env_var *path)
+void free_exit_mem(char **argv, char *lineptr,
+		char *lineptr_cpy, env_var *path)
 {
 	free(argv);
 	free(path->key);
@@ -31,6 +32,9 @@ void free_exit_mem(char **argv, char *lineptr, char *lineptr_cpy, env_var *path)
 /**
  * handle_exit - handle the case to exit shell
  * @argv: double pointer to arguments
+ * @lineptr: line pointer
+ * @lineptr_cpy: line pointer copy
+ * @path: environmentvariable
  *
  * Return: Nothing.
  */
