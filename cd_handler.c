@@ -25,7 +25,7 @@ int get_argv_count(char **argv)
  * change_directory - changes the working directory
  * @argv: pointer to an array of arguments
  *
- * Return: Nothin.
+ * Return: Nothing.
  */
 
 void change_directory(char **argv)
@@ -71,8 +71,13 @@ void change_directory(char **argv)
 	}
 	else
 	{
-		printf("error coming ...\n");
 		perror("getcwd");
 	}
+
+	free(old_pwd->key);
+	old_pwd->key = NULL;
+	free(old_pwd);
+	free(env->key);
+	free(env);
 
 }
