@@ -81,7 +81,6 @@ int _unsetenv(const char *name)
 		token = str_tok(env_cpy, delim);
 		if (token != NULL && _strcmp(token, variable) == 0)
 		{
-			free(env[i]);
 			while (env[i + 1] != NULL)
 			{
 				env[i] = env[i + 1];
@@ -89,7 +88,6 @@ int _unsetenv(const char *name)
 			}
 			env[i] = NULL;
 			free(env_cpy);
-			free(variable);
 			return (0);
 		}
 		free(env_cpy);
