@@ -40,7 +40,9 @@ char *_setenv(const char *name, const char *value, int overwrite)
 			free(env_cpy);
 			env_cpy = NULL;
 			free(key);
+			key = NULL;
 			free(val);
+			val = NULL;
 			return (new_variable);
 		}
 		free(env_cpy);
@@ -51,27 +53,48 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	env[i] = new_variable;
 	env[i + 1] = NULL;
 	free(key);
+	key = NULL;
 	free(val);
+	val = NULL;
 	return (new_variable);
 }
+
 /**
  * _unsetenv - remove an env variable
- * @args: argument passed
+ * @name: pointer to the variable to unset
  * Return: 0 on success -1 on failure
  */
-void _unsetenv(char **args)
-{
-	int result;
-	char *variable = args[0];
 
-	/* Unset the environment variable. */
-	result = unsetenv(variable);
-	/* Check if the operation was successful. */
-	if (result == -1)
+int _unsetenv(const char *name)
+{
+	char *variable;
+	char **env = environ;
+	int i = 0;
+
+	variable = _strdup(name);
+	while (env[i] != NULL)
 	{
-		/* Print an error message. */
-		write(STDERR_FILENO, "Error unsetting environment variable: ", 29);
-		write(STDERR_FILENO, variable, _strlen(variable));
-		write(STDERR_FILENO, "\n", 1);
+		char *delim = "=\n";
+		char *token;
+		char *env_cpy = _strdup(env[i]);
+
+		token = str_tok(env_cpy, delim);
+		if (token != NULL && _strcmp(token, variable) == 0)
+		{
+			free(env[i]);
+			while (env[i + 1] != NULL)
+			{
+				env[i] = env[i + 1];
+				i++;
+			}
+			env[i] = NULL;
+			free(env_cpy);
+			free(variable);
+			return (0);
+		}
+		free(env_cpy);
+		free(variable);
+		i++;
 	}
+	return (-1);
 }

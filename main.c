@@ -79,6 +79,15 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (filepath);
 	}
+	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
+	{
+		int res;
+		res = _unsetenv(argv->argv[1]);
+		if (res != 0)
+			perror("unsetenv");
+		free_resources(path, argv);
+		return (filepath);
+	}
 	result = get_callback(argv->argv[0]);
 	if (result == NULL)
 	{
