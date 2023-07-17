@@ -91,14 +91,13 @@ char *_strdup(const char *str)
  * @n: number of copied bytes
  * Return: dest
  */
+
 char *_memcpy(char *dest, const char *src, unsigned int n)
 {
 	unsigned int t;
 
-	for (t = 0; t < n && src[t] != '\0'; t++)
+	for (t = 0; t < n; t++)
 		dest[t] = src[t];
-	for (; t < n; t++)
-		dest[t] = '\0';
 
 	return (dest);
 }
