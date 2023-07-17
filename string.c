@@ -96,7 +96,7 @@ char *_memcpy(char *dest, const char *src, unsigned int n)
 {
 	unsigned int t;
 
-	for (t = 0; t < n; t++)
+	for (t = 0; t < n && src[t] != '\0'; t++)
 		dest[t] = src[t];
 
 	return (dest);
