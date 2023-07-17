@@ -3,30 +3,56 @@
 #include "main.h"
 /**
  * _setenv - initializes a new environment variable, or modify existing one
- * @args: argument passed
+ * @name: pointer the variable whose value is to be set/updated
+ * @value: pointer to the value to be set/updated
+ * @overwrite: interger condition to overwrite existing variable
  * Return: 0 onsuccess, -1 on failure
  */
-void _setenv(char **args)
+char *_setenv(const char *name, const char *value, int overwrite)
 {
-	int result;
-	char *variable = args[0];
-	char *value = args[1];
+	char *key, *val;
+	char **env = environ;
+	char *new_variable = NULL;
+	int len, i = 0;
 
-	if (args[0] == NULL || args[1] == NULL)
+	key = _strdup(name);
+	val = _strdup(value);
+	len = _strlen(key) + _strlen(val) + 2;
+	new_variable = malloc(len * sizeof(char));
+	_strcpy(new_variable, key);
+	_strcat(new_variable, "=");
+	_strcat(new_variable, val);
+
+	if (new_variable == NULL)
+		return (NULL);
+	while(env[i] != NULL)
 	{
-		write(STDERR_FILENO, "Missing arguments for setenv\n", 28);
-		return;
+		char *delim = "=\n";
+		char *token;
+		char *env_cpy;
+		
+		env_cpy = _strdup(env[i]);
+		token = str_tok(env_cpy, delim);
+		if (_strcmp(token, key) == 0 && overwrite)
+		{
+			printf("--------Variable exist, we are updating--------\n");
+			env[i] = new_variable;
+			free(env_cpy);
+			env_cpy = NULL;
+			free(key);
+			free(val);
+			return (new_variable);
+		}
+		free(env_cpy);
+		env_cpy = NULL;
+		i++;
 	}
-	/*set the env var*/
-	result = setenv(variable, value, 1);
-	/*check if operation was successful*/
-	if (result == -1)
-	{
-		/*print an error message*/
-		write(STDERR_FILENO, "Error setting environment variable: ", 27);
-		write(STDERR_FILENO, variable, _strlen(variable));
-		write(STDERR_FILENO, "\n", 1);
-	}
+	printf("---------------Variable does not exist, we are adding it--------\n");
+	env[i] = new_variable;
+	env[i + 1] = NULL;
+	free(key);
+	free(val);
+	return (new_variable);
 }
 /**
  * _unsetenv - remove an env variable

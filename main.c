@@ -68,6 +68,17 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (NULL);
 	}
+	if (_strcmp(argv->argv[0], "setenv") == 0)
+	{
+		char *res;
+
+		res = _setenv(argv->argv[1], argv->argv[2], 1);
+		if (res == NULL)
+			return (NULL);
+		free(res);
+		free_resources(path, argv);
+		return (filepath);
+	}
 	result = get_callback(argv->argv[0]);
 	if (result == NULL)
 	{
