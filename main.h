@@ -47,7 +47,7 @@ void print_env(char **env);
 env_var *get_env(char *variable);
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
 custom_args *init_argv(char *lineptr, env_var *path);
-char *str_tok(char *str, char *delim);
+char *str_tok(char *str, const char *delim);
 void (*get_callback(char *command))(char **);
 void handle_exit(char **, char *, char *, env_var *);
 
@@ -58,6 +58,7 @@ char *_strdup(const char *str);
 char *_memcpy(char *dest, const char *src, unsigned int n);
 int _atoi(char *s);
 int _strcmp(char *s1, char *s2);
+char *_strchr(const char *s, int c);
 char *get_line_number(void);
 void *_realloc(void *ptr, size_t size);
 void print_err(char *program_name);

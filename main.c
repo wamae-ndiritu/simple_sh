@@ -107,7 +107,7 @@ char *execute_file(char *lineptr, char *argV[])
 		filepath = execute_helper(argv, path, argV);
 		if (filepath == NULL)
 		{
-			free_resources(path, argv);
+			free_resources(path, NULL);
 			return (NULL);
 		}
 		return (filepath);
@@ -124,61 +124,52 @@ char *execute_file(char *lineptr, char *argV[])
  *
  * Return: The exit status of the command.
  */
-int execute_command(char *command, char *argV[]) 
+int execute_command(char *command, char *argV[])
 {
 	int exit_status = 0;
-	char *commands_delimiters = "&&||";
+	char *commands_delimiters = "&&||;";
 
-	/* Tokenize the command using "&&" and "||" as delimiters */
+	/* Tokenize the command using str_tok. */
 	char *subcommand = str_tok(command, commands_delimiters);
-	int logical_op = 0; /* 0: no operator, 1: &&, 2: || */
 
-	while (subcommand != NULL) 
+	while (subcommand != NULL)
 	{
-		char *rest = subcommand + _strlen(subcommand) + 1;
-		char *memory = NULL;
-
-		if (*rest == '&' && *(rest + 1) == '&') 
+		char *memory;
+		/* Check if the current token is an operator. */
+		if (_strcmp(subcommand, "&&") == 0)
 		{
-			logical_op = 1; /* && operator */
-		} 
-		else if (*rest == '|' && *(rest + 1) == '|') 
-		{
-			logical_op = 2; /* || operator */
-		} 
-		else 
-		{
-			logical_op = 0; /* no operator */
+			/* Execute the next subcommand only if the previous one succeeded. */
+			if (exit_status == 0)
+				memory = execute_file(str_tok(NULL, commands_delimiters), argV);
 		}
-
-		/* Execute the current subcommand */
-		memory = execute_file(subcommand, argV);
-		if (memory == NULL) 
+		else if (_strcmp(subcommand, "||") == 0)
 		{
-			exit_status = 1;
-			if (logical_op == 1)
+			/* Execute the next subcommand only if the previous one failed. */
+			if (exit_status != 0)
+				memory = execute_file(str_tok(NULL, commands_delimiters), argV);
+		}
+		else if (_strcmp(subcommand, ";") == 0)
+		{
+			/* Continue to the next subcommand regardless of the result. */
+			memory = execute_file(str_tok(NULL, commands_delimiters), argV);
+		}
+		else
+		{
+			/* Execute the current subcommand. */
+			memory = execute_file(subcommand, argV);
+			if (memory == NULL)
 			{
-				break;/*if operator && and comand fails, stop execution*/
+				/* Command failed. */
+				exit_status = 1;
 			}
-		} 
-		else 
-		{
-			free(memory);
+			else
+			{
+				/* Command succeeded. */
+				free(memory);
+			}
 		}
-
-		/* Check for logical operators */
-		if (logical_op == 1 && exit_status == 0) 
-		{ /* && operator */
-			subcommand = str_tok(NULL, commands_delimiters);
-		} 
-		else if (logical_op == 2 && exit_status != 0) 
-		{ /* || operator */
-			subcommand = str_tok(NULL, commands_delimiters);
-		} 
-		else 
-		{
-			break; /* No logical operator or exit status doesn't match, break the loop. */
-		}
+		/* Get the next token. */
+		subcommand = str_tok(NULL, commands_delimiters);
 	}
 
 	return (exit_status);
