@@ -31,7 +31,8 @@ void print_env(char **env)
 env_var *get_env(char *variable)
 {
 	char **env = environ;
-	char *token, *delim = "=\n";
+	char *token;
+	char *delim = "=\n";
 	char *env_cpy = NULL;
 	env_var *envp;
 
