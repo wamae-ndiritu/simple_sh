@@ -15,12 +15,21 @@ void print_env(char **env)
 	int variable_len;
 
 	env = environ;
+	/* make sure env not null */
+	if (env == NULL)
+	{
+		printf("Found NULL env\n");
+		return;
+	}
 	while (*env != NULL)
 	{
-		variable_len = _strlen(*env) + 1;
-		write(STDOUT_FILENO, *env, variable_len);
-		write(STDOUT_FILENO, "\n", 1);
-		env++;
+		if (*env != NULL)
+		{
+			variable_len = _strlen(*env) + 1;
+			write(STDOUT_FILENO, *env, variable_len);
+			write(STDOUT_FILENO, "\n", 1);
+			env++;
+		}
 	}
 }
 /**

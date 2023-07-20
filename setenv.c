@@ -11,7 +11,7 @@
  */
 char *_setenv(const char *name, const char *value, int overwrite)
 {
-	char *key, *val;
+	char *key = NULL, *val = NULL;
 	char **env = environ;
 	char *new_variable = NULL;
 	int len, i = 0;
@@ -20,12 +20,16 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	val = _strdup(value);
 	len = _strlen(key) + _strlen(val) + 2;
 	new_variable = malloc(len * sizeof(char));
+	if (new_variable == NULL)
+	{
+		free(key);
+		free(val);
+		return (NULL);
+	}
 	_strcpy(new_variable, key);
 	_strcat(new_variable, "=");
 	_strcat(new_variable, val);
-
-	if (new_variable == NULL)
-		return (NULL);
+	free(val);
 	while(env[i] != NULL)
 	{
 		char *delim = "=\n";
@@ -34,17 +38,25 @@ char *_setenv(const char *name, const char *value, int overwrite)
 		
 		env_cpy = _strdup(env[i]);
 		token = str_tok(env_cpy, delim);
-		if (_strcmp(token, key) == 0 && overwrite)
+		if (token != NULL && _strcmp(token, key) == 0 && overwrite)
 		{
+			if (overwrite)
+			{
 			printf("--------Variable exist, we are updating--------\n");
 			env[i] = new_variable;
 			free(env_cpy);
 			env_cpy = NULL;
 			free(key);
-			key = NULL;
-			free(val);
-			val = NULL;
 			return (new_variable);
+			}
+			else
+			{
+				/* variable exist but not allowed to overwrite */
+				free(key);
+				free(new_variable);
+				free(env_cpy);
+				return (env[i]);
+			}
 		}
 		free(env_cpy);
 		env_cpy = NULL;
@@ -54,9 +66,6 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	env[i] = new_variable;
 	env[i + 1] = NULL;
 	free(key);
-	key = NULL;
-	free(val);
-	val = NULL;
 	return (new_variable);
 }
 

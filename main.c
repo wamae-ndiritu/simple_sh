@@ -58,6 +58,7 @@ char *execute_file(char *lineptr, char *argV[])
 	char *filepath = NULL;
 	env_var *path;
 	custom_args *argv;
+	char **envr = environ;
 	void (*result)(char **);
 
 	path = get_env("PATH");
@@ -69,7 +70,7 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (NULL);
 	}
-	/*if (strcmp(argv->argv[0], "setenv") == 0)
+	if (strcmp(argv->argv[0], "setenv") == 0)
 	{
 		char *res;
 
@@ -79,8 +80,8 @@ char *execute_file(char *lineptr, char *argV[])
 		free(res);
 		free_resources(path, argv);
 		return (filepath);
-	}*/
-	if (strcmp(argv->argv[0], "unsetenv") == 0)
+	}
+	else if (strcmp(argv->argv[0], "unsetenv") == 0)
 	{
 		int res;
 		res = _unsetenv(argv->argv[1]);
@@ -110,7 +111,7 @@ char *execute_file(char *lineptr, char *argV[])
 			}
 			return (filepath);
 		}
-		result(argv->argv);
+		result(envr);
 		free_resources(path, argv);
 		return (filepath);
 	}
