@@ -32,7 +32,7 @@ env_var *get_env(char *variable)
 {
 	char **env = environ;
 	char *token, *delim = "=\n";
-	char *env_cpy;
+	char *env_cpy = NULL;
 	env_var *envp;
 
 	envp = malloc(sizeof(env_var));

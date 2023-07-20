@@ -5,6 +5,23 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include "main.h"
+
+int count_iterations(char *lineptr)
+{
+	char *str;
+	char *lineptr_cpy;
+	char *delim = "&|;\n";
+
+	lineptr_cpy = _strdup(lineptr);
+	str = str_tok(lineptr_cpy, delim);
+	while (str != NULL)
+	{
+		printf("%s\n", str);
+		str = str_tok(NULL, delim);
+	}
+	return (0);
+}
+
 /**
  * count_args - Counts the number of arguments in a line
  * @lineptr: The input line to process
@@ -45,6 +62,7 @@ custom_args *init_argv(char *lineptr, env_var *path)
 
 	lineptr_cpy = _strdup(lineptr);
 	ac = count_args(lineptr);
+
 	argv = malloc(sizeof(char *) * (ac + 1));
 	if (argv == NULL)
 	{

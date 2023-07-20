@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <string.h>
 #include "main.h"
 
 /**
@@ -68,7 +69,7 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (NULL);
 	}
-	if (_strcmp(argv->argv[0], "setenv") == 0)
+	/*if (strcmp(argv->argv[0], "setenv") == 0)
 	{
 		char *res;
 
@@ -78,8 +79,8 @@ char *execute_file(char *lineptr, char *argV[])
 		free(res);
 		free_resources(path, argv);
 		return (filepath);
-	}
-	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
+	}*/
+	if (strcmp(argv->argv[0], "unsetenv") == 0)
 	{
 		int res;
 		res = _unsetenv(argv->argv[1]);
@@ -88,27 +89,31 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (filepath);
 	}
-	result = get_callback(argv->argv[0]);
-	if (result == NULL)
+	else
 	{
-		filepath = find_executable(path, argv->argv[0]);
-		if (filepath == NULL)
+		result = get_callback(argv->argv[0]);
+		if (result == NULL)
 		{
-			print_err(argV[0]);
-			free_resources(path, argv);
-			return (NULL);
+			filepath = find_executable(path, argv->argv[0]);
+			if (filepath == NULL)
+			{
+				print_err(argV[0]);
+				free_resources(path, argv);
+				return (NULL);
+			}
+			argv->argv[0] = filepath;
+			filepath = execute_helper(argv, path, argV);
+			if (filepath == NULL)
+			{
+				free_resources(path, argv);
+				return (NULL);
+			}
+			return (filepath);
 		}
-		argv->argv[0] = filepath;
-		filepath = execute_helper(argv, path, argV);
-		if (filepath == NULL)
-		{
-			free_resources(path, argv);
-			return (NULL);
-		}
+		result(argv->argv);
+		free_resources(path, argv);
 		return (filepath);
 	}
-	result(argv->argv);
-	free_resources(path, argv);
 	return (filepath);
 }
 
