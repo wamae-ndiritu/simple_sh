@@ -13,8 +13,9 @@ char *_setenv(const char *name, const char *value, int overwrite)
 {
 	char *key = NULL, *val = NULL;
 	char **env = environ;
+	char **new_env;
 	char *new_variable = NULL;
-	int len, i = 0;
+	int len, var_count = 0, i = 0;
 
 	key = _strdup(name);
 	val = _strdup(value);
@@ -30,20 +31,20 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	_strcat(new_variable, "=");
 	_strcat(new_variable, val);
 	free(val);
-	while(env[i] != NULL)
+	while(*env != NULL)
 	{
 		char *delim = "=\n";
 		char *token;
 		char *env_cpy;
 		
-		env_cpy = _strdup(env[i]);
+		env_cpy = _strdup(*env);
 		token = str_tok(env_cpy, delim);
 		if (token != NULL && _strcmp(token, key) == 0 && overwrite)
 		{
 			if (overwrite)
 			{
 			printf("--------Variable exist, we are updating--------\n");
-			env[i] = new_variable;
+			*env = new_variable;
 			free(env_cpy);
 			env_cpy = NULL;
 			free(key);
@@ -55,16 +56,33 @@ char *_setenv(const char *name, const char *value, int overwrite)
 				free(key);
 				free(new_variable);
 				free(env_cpy);
-				return (env[i]);
+				return (*env);
 			}
 		}
 		free(env_cpy);
 		env_cpy = NULL;
-		i++;
+		env++;
 	}
 	printf("---------------Variable does not exist, we are adding it--------\n");
-	env[i] = new_variable;
-	env[i + 1] = NULL;
+
+	while (environ[var_count] != NULL)
+		var_count++;
+
+	new_env = (char **)malloc((var_count + 2) * sizeof(char *));
+	if (new_env == NULL)
+	{
+		free(key);
+		free(new_variable);
+		return (NULL);
+	}
+
+	for (i = 0; i < var_count; i++)
+		new_env[i] = environ[i];
+
+	new_env[var_count] = new_variable;
+	new_env[var_count + 1] = NULL;
+
+	environ = new_env;
 	free(key);
 	return (new_variable);
 }
