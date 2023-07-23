@@ -13,7 +13,7 @@
 void (*get_callback(char *command))(char **)
 {
 	Command commandList[] = {
-		{"env", print_env},
+		/*{"env", print_env},*/
 		{"cd", change_directory},
 		{NULL, NULL}
 	};

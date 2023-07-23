@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stddef.h>
 
+/* Global external variables */
+extern char** my_environ;
+
 /**
  * struct custom_args - structure to hold argc and argv[]
  * @lineptr_cpy: pointer to a mem copied using strdup
@@ -69,6 +72,6 @@ char *find_executable(env_var *var, char *filename);
 
 void change_directory(char **argv);
 void free_resources(env_var *path, custom_args *argv);
-char *_setenv(const char *name, const char *value, int overwrite);
+char *_setenv(const char *name, const char *value, int overwrite, char ***env);
 int _unsetenv(const char *name);
 #endif

@@ -7,13 +7,13 @@
  * @name: pointer the variable whose value is to be set/updated
  * @value: pointer to the value to be set/updated
  * @overwrite: interger condition to overwrite existing variable
+ * @env: pointer to the environ (external variable)
  * Return: 0 onsuccess, -1 on failure
  */
-char *_setenv(const char *name, const char *value, int overwrite)
+char *_setenv(const char *name, const char *value, int overwrite, char ***env)
 {
 	char *key = NULL, *val = NULL;
-	char **env = environ;
-	char **new_env;
+	char **new_env, **current_env;
 	char *new_variable = NULL;
 	int len, var_count = 0, i = 0;
 
@@ -31,20 +31,21 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	_strcat(new_variable, "=");
 	_strcat(new_variable, val);
 	free(val);
-	while(*env != NULL)
+	current_env = *env;
+	while(*current_env != NULL)
 	{
 		char *delim = "=\n";
 		char *token;
 		char *env_cpy;
 		
-		env_cpy = _strdup(*env);
+		env_cpy = _strdup(*current_env);
 		token = str_tok(env_cpy, delim);
 		if (token != NULL && _strcmp(token, key) == 0 && overwrite)
 		{
 			if (overwrite)
 			{
 			printf("--------Variable exist, we are updating--------\n");
-			*env = new_variable;
+			*current_env = new_variable;
 			free(env_cpy);
 			env_cpy = NULL;
 			free(key);
@@ -56,16 +57,16 @@ char *_setenv(const char *name, const char *value, int overwrite)
 				free(key);
 				free(new_variable);
 				free(env_cpy);
-				return (*env);
+				return (*current_env);
 			}
 		}
 		free(env_cpy);
 		env_cpy = NULL;
-		env++;
+		current_env++;
 	}
 	printf("---------------Variable does not exist, we are adding it--------\n");
 
-	while (environ[var_count] != NULL)
+	while ((*env)[var_count] != NULL)
 		var_count++;
 
 	new_env = (char **)malloc((var_count + 2) * sizeof(char *));
@@ -77,12 +78,19 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	}
 
 	for (i = 0; i < var_count; i++)
-		new_env[i] = environ[i];
+	{
+		new_env[i] = _strdup((*env)[i]);
+		if (new_env[i] == NULL)
+		{
+			perror("Memory allocation error");
+			exit(1);
+		}
+	}
 
 	new_env[var_count] = new_variable;
 	new_env[var_count + 1] = NULL;
 
-	environ = new_env;
+	*env = new_env;
 	free(key);
 	return (new_variable);
 }

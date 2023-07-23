@@ -74,11 +74,16 @@ char *execute_file(char *lineptr, char *argV[])
 	{
 		char *res;
 
-		res = _setenv(argv->argv[1], argv->argv[2], 1);
+		res = _setenv(argv->argv[1], argv->argv[2], 1, &my_environ);
 		if (res == NULL)
 			return (NULL);
 		free(res);
 		free_resources(path, argv);
+		return (filepath);
+	}
+	else if (_strcmp(argv->argv[0], "env") == 0)
+	{
+		print_env(my_environ);
 		return (filepath);
 	}
 	else if (strcmp(argv->argv[0], "unsetenv") == 0)
@@ -148,6 +153,7 @@ int main(int ac, char *argV[])
 	int exit_status = 0;
 	int interactive_mode = isatty(STDIN_FILENO);
 
+	my_environ = environ;
 	signal(SIGINT, signal_handler);
 	while (1)
 	{

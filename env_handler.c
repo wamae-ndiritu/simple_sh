@@ -14,7 +14,7 @@ void print_env(char **env)
 {
 	int variable_len;
 
-	env = environ;
+	/*env = my_environ;*/
 	/* make sure env not null */
 	if (env == NULL)
 	{
@@ -23,7 +23,6 @@ void print_env(char **env)
 	}
 	while (*env != NULL)
 	{
-		printf("PRINT ENV: %s\n", *env);
 		if (*env != NULL)
 		{
 			variable_len = _strlen(*env) + 1;
