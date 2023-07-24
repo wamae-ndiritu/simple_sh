@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <stddef.h>
 
-/* Global external variables */
-extern char** my_environ;
-
 /**
  * struct custom_args - structure to hold argc and argv[]
  * @lineptr_cpy: pointer to a mem copied using strdup

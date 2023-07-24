@@ -152,7 +152,6 @@ int main(int ac, char *argV[])
 	int exit_status = 0;
 	int interactive_mode = isatty(STDIN_FILENO);
 
-	my_environ = environ;
 	signal(SIGINT, signal_handler);
 	while (1)
 	{
