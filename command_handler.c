@@ -5,7 +5,12 @@
 #include <sys/wait.h>
 #include "main.h"
 
-
+/**
+ * execute_set_env - Executes the "setenv" and "unsetenv" commands.
+ * @argv: Pointer to the array of command-line arguments.
+ *
+ * Return: A message indicating the result of the command execution.
+ */
 char *execute_set_env(char **argv)
 {
 	int result;
@@ -21,7 +26,6 @@ char *execute_set_env(char **argv)
 		if (result != 0)
 			return (NULL);
 		return (*argv);
-
 	}
 	else if (_strcmp(command, "unsetenv") == 0)
 	{
@@ -34,35 +38,36 @@ char *execute_set_env(char **argv)
 	}
 	return (message);
 }
+
 /**
- * free_exit_mem - frees mem on exit
- * @argv: pointer to argv
- * @lineptr: pointer to mem lineptr
- * @lineptr_cpy: lineptr copy
- * @path: path with mem
+ * check_for_exit - Checks if the command is "exit" and handles the exit.
+ * @argv: Pointer to the custom_args structure.
+ * @path: Pointer to the env_var structure.
+ * @lineptr: Pointer to the line pointer.
+ * @exit_status: The exit status of the shell.
  *
  * Return: Nothing.
  */
-
-
-void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status)
+void check_for_exit(custom_args *argv, env_var *path, char *lineptr,
+		int exit_status)
 {
 	if (_strcmp(argv->argv[0], "exit") == 0)
 	{
 		handle_exit(argv, path, lineptr, exit_status);
 	}
-}	
+}
 
 /**
- * handle_exit - handle the case to exit shell
- * @argv: double pointer to arguments
- * @lineptr: line pointer
- * @lineptr_cpy: line pointer copy
- * @path: environmentvariable
+ * handle_exit - Handles the "exit" command to exit the shell.
+ * @argv: Pointer to the custom_args structure.
+ * @path: Pointer to the env_var structure.
+ * @lineptr: Pointer to the line pointer.
+ * @exit_status: The exit status of the shell.
  *
  * Return: Nothing.
  */
-void handle_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status)
+void handle_exit(custom_args *argv, env_var *path, char *lineptr,
+		int exit_status)
 {
 	int status;
 	int ac = 0, i = 0;
@@ -98,3 +103,4 @@ void handle_exit(custom_args *argv, env_var *path, char *lineptr, int exit_statu
 		}
 	}
 }
+

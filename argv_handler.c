@@ -47,7 +47,6 @@ int count_args(char *lineptr)
 /**
  * init_argv - Initializes the arguments array and handles callbacks
  * @lineptr: The input line to process
- * @path: path with mem
  *
  * Return: A pointer to the custom_args struct
  */
