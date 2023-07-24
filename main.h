@@ -46,10 +46,20 @@ extern char **environ;
 void print_env(char **env);
 env_var *get_env(char *variable);
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
-custom_args *init_argv(char *lineptr, env_var *path);
+
+/* argv_handler.c */
+int get_argument_count(char **argv);
+custom_args *init_argv(char *lineptr);
+
 char *str_tok(char *str, char *delim);
+
+/* get_callback.c */
 void (*get_callback(char *command))(char **);
-void handle_exit(char **, char *, char *, env_var *);
+
+/* command_handler.c */
+char *execute_set_env(char **argv);
+void handle_exit(custom_args *, env_var *, char *, int);
+void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status);
 
 char *_strcat(char *dest, const char *src);
 char *_strcpy(char *dest, const char *src);
@@ -69,6 +79,7 @@ char *find_executable(env_var *var, char *filename);
 
 void change_directory(char **argv);
 void free_resources(env_var *path, custom_args *argv);
-char *_setenv(const char *name, const char *value, int overwrite);
+int _setenv(const char *name, const char *value, int overwrit);
 int _unsetenv(const char *name);
+
 #endif

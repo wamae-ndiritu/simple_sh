@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <string.h>
 #include "main.h"
 
 /**
@@ -52,59 +53,55 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
  *
  * Return: The file path on success, or NULL on failure.
  */
-char *execute_file(char *lineptr, char *argV[])
+char *execute_file(char *lineptr, char *argV[], int exit_status)
 {
 	char *filepath = NULL;
 	env_var *path;
 	custom_args *argv;
 	void (*result)(char **);
+	char *message;
 
 	path = get_env("PATH");
 	if (path == NULL)
 		return (NULL);
-	argv = init_argv(lineptr, path);
+	argv = init_argv(lineptr);
 	if (argv == NULL)
 	{
 		free_resources(path, argv);
 		return (NULL);
 	}
-	if (_strcmp(argv->argv[0], "setenv") == 0)
-	{
-		char *res;
-
-		res = _setenv(argv->argv[1], argv->argv[2], 1);
-		if (res == NULL)
-			return (NULL);
-		free(res);
-		free_resources(path, argv);
-		return (filepath);
-	}
-	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
-	{
-		int res;
-		res = _unsetenv(argv->argv[1]);
-		if (res != 0)
-			perror("unsetenv");
-		free_resources(path, argv);
-		return (filepath);
-	}
+	check_for_exit(argv, path, lineptr, exit_status);
 	result = get_callback(argv->argv[0]);
 	if (result == NULL)
 	{
-		filepath = find_executable(path, argv->argv[0]);
-		if (filepath == NULL)
-		{
-			print_err(argV[0]);
-			free_resources(path, argv);
-			return (NULL);
-		}
-		argv->argv[0] = filepath;
-		filepath = execute_helper(argv, path, argV);
-		if (filepath == NULL)
+		message = execute_set_env(argv->argv);
+		if (message == NULL)
 		{
 			free_resources(path, argv);
 			return (NULL);
 		}
+		else if (_strcmp(message, "Not setenv or unsetenv") == 0)
+		{
+			filepath = find_executable(path, argv->argv[0]);
+			if (filepath == NULL)
+			{
+				exit_status = 127;
+				print_err(argV[0]);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
+				return (NULL);
+			}
+			argv->argv[0] = filepath;
+			filepath = execute_helper(argv, path, argV);
+			if (filepath == NULL)
+			{
+				free_resources(path, argv);
+				return (NULL);
+			}
+			return (filepath);
+		}
+		free_resources(path, argv);
 		return (filepath);
 	}
 	result(argv->argv);
@@ -164,7 +161,7 @@ int main(int ac, char *argV[])
 		else
 		{
 			lineptr[num_char_read - 1] = '\0';
-			memory = execute_file(lineptr, argV);
+			memory = execute_file(lineptr, argV, exit_status);
 			if (memory == NULL)
 			{
 				exit_status = 1;
