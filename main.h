@@ -58,7 +58,7 @@ void (*get_callback(char *command))(char **);
 
 /* command_handler.c */
 char *execute_set_env(char **argv);
-void handle_exit(char **, char *, char *, env_var *, int);
+void handle_exit(custom_args *, env_var *, char *, int);
 void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status);
 
 char *_strcat(char *dest, const char *src);

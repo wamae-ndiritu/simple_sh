@@ -44,24 +44,12 @@ char *execute_set_env(char **argv)
  * Return: Nothing.
  */
 
-void free_exit_mem(char **argv, char *lineptr,
-		char *lineptr_cpy, env_var *path)
-{
-	free(argv);
-	free(path->key);
-	path->key = NULL;
-	free(path);
-	free(lineptr_cpy);
-	lineptr_cpy = NULL;
-	free(lineptr);
-	lineptr = NULL;
-}
 
 void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status)
 {
 	if (_strcmp(argv->argv[0], "exit") == 0)
 	{
-		handle_exit(argv->argv, lineptr, argv->lineptr_cpy, path, exit_status);
+		handle_exit(argv, path, lineptr, exit_status);
 	}
 }	
 
@@ -74,35 +62,38 @@ void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_st
  *
  * Return: Nothing.
  */
-void handle_exit(char **argv, char *lineptr, char *lineptr_cpy, env_var *path, int exit_status)
+void handle_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status)
 {
 	int status;
 	int ac = 0, i = 0;
 	char *msg;
 
-	while (argv[i] != NULL)
+	while (argv->argv[i] != NULL)
 	{
 		ac++;
 		i++;
 	}
 	if (ac == 1)
 	{
-		free_exit_mem(argv, lineptr, lineptr_cpy, path);
+		free_resources(path, argv);
+		free(lineptr);
 		exit(exit_status);
 	}
 	else if (ac == 2)
 	{
-		status = _atoi(argv[1]);
+		status = _atoi(argv->argv[1]);
 		if (status != 0)
 		{
-			free_exit_mem(argv, lineptr, lineptr_cpy, path);
+			free_resources(path, argv);
+			free(lineptr);
 			exit(status);
 		}
 		else
 		{
 			msg = "Illegal number to exit\n";
 			write(STDOUT_FILENO, msg, _strlen(msg));
-			free_exit_mem(argv, lineptr, lineptr_cpy, path);
+			free_resources(path, argv);
+			free(lineptr);
 			exit(128);
 		}
 	}
