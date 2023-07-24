@@ -86,7 +86,9 @@ char *execute_file(char *lineptr, char *argV[])
 			if (filepath == NULL)
 			{
 				print_err(argV[0]);
-				free_resources(path, argv);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
 				return (NULL);
 			}
 			argv->argv[0] = filepath;
