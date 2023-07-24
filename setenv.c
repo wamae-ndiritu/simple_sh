@@ -11,94 +11,14 @@
  * @env: pointer to the environ (external variable)
  * Return: 0 onsuccess, -1 on failure
  */
-char *_setenv(const char *name, const char *value, int overwrite)
+int _setenv(const char *name, const char *value, int overwrite)
 {
-	char *key = NULL, *val = NULL;
-	char **env, **new_env;
-	char *new_variable = NULL;
-	int len, var_count = 0, i, j;
+	int result;
 
-	env = get_environ();
-	key = _strdup(name);
-	val = _strdup(value);
-	len = _strlen(key) + _strlen(val) + 2;
-	new_variable = malloc(len * sizeof(char));
-	if (new_variable == NULL)
-	{
-		free(key);
-		free(val);
-		return (NULL);
-	}
-	_strcpy(new_variable, key);
-	_strcat(new_variable, "=");
-	_strcat(new_variable, val);
-	free(val);
-	while(*env != NULL)
-	{
-		char *delim = "=\n";
-		char *token;
-		char *env_cpy;
-		
-		env_cpy = _strdup(*env);
-		token = str_tok(env_cpy, delim);
-		if (token != NULL && _strcmp(token, key) == 0 && overwrite)
-		{
-			if (overwrite)
-			{
-			printf("--------Variable exist, we are updating--------\n");
-			*env = new_variable;
-			free(env_cpy);
-			env_cpy = NULL;
-			free(key);
-			return (new_variable);
-			}
-			else
-			{
-				/* variable exist but not allowed to overwrite */
-				free(key);
-				free(new_variable);
-				free(env_cpy);
-				return (*env);
-			}
-		}
-		free(env_cpy);
-		env_cpy = NULL;
-		env++;
-	}
-	printf("---------------Variable does not exist, we are adding it--------\n");
-
-	while (env[var_count] != NULL)
-		var_count++;
-
-	new_env = malloc((var_count + 2) * sizeof(char *));
-	if (new_env == NULL)
-	{
-		free(key);
-		free(new_variable);
-		return (NULL);
-	}
-
-	for (i = 0; i < var_count; i++)
-	{
-		new_env[i] = _strdup(env[i]);
-		if (new_env[i] == NULL)
-		{
-			for (j = 0; j < var_count; j++)
-				free(new_env[j]);
-			free(new_env);
-			free(key);
-			free(new_variable);
-			return (NULL);
-		}
-	}
-
-
-	new_env[var_count] = new_variable;
-	new_env[var_count + 1] = NULL;
-	environ = new_env;
-
-	free(key);
-	return (new_variable);
+	result = setenv(name, value, overwrite);
+	if (result != 0)
+		perror("setenv");
+	return (result);
 }
 
 /**

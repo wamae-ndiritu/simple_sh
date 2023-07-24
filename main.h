@@ -72,7 +72,7 @@ char *find_executable(env_var *var, char *filename);
 
 void change_directory(char **argv);
 void free_resources(env_var *path, custom_args *argv);
-char *_setenv(const char *name, const char *value, int overwrit);
+int _setenv(const char *name, const char *value, int overwrit);
 int _unsetenv(const char *name);
 
 /* environ.c */
