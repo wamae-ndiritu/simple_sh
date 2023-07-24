@@ -6,20 +6,22 @@
 #include <sys/wait.h>
 #include "main.h"
 
-int count_iterations(char *lineptr)
-{
-	char *str;
-	char *lineptr_cpy;
-	char *delim = "&|;\n";
+/**
+ * get_argument_count - counts the number of arguments in the array argv
+ * @argv: pointer to an array of strings
+ * Return: Return argument count
+ */
 
-	lineptr_cpy = _strdup(lineptr);
-	str = str_tok(lineptr_cpy, delim);
-	while (str != NULL)
+int get_argument_count(char **argv)
+{
+	int ac = 0;
+
+	while (*argv != NULL)
 	{
-		printf("%s\n", str);
-		str = str_tok(NULL, delim);
+		argv++;
+		ac++;
 	}
-	return (0);
+	return (ac);
 }
 
 /**

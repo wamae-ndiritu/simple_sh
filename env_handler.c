@@ -14,7 +14,7 @@ void print_env(char **env)
 {
 	int variable_len;
 
-	/*env = my_environ;*/
+	env = environ;
 	/* make sure env not null */
 	if (env == NULL)
 	{

@@ -46,9 +46,15 @@ extern char **environ;
 void print_env(char **env);
 env_var *get_env(char *variable);
 ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
+
+/* argv_handler.c */
+int get_argument_count(char **argv);
 custom_args *init_argv(char *lineptr, env_var *path);
 char *str_tok(char *str, char *delim);
 void (*get_callback(char *command))(char **);
+
+/* command_handler.c */
+char *execute_set_env(char **argv);
 void handle_exit(char **, char *, char *, env_var *);
 
 char *_strcat(char *dest, const char *src);
@@ -71,8 +77,5 @@ void change_directory(char **argv);
 void free_resources(env_var *path, custom_args *argv);
 int _setenv(const char *name, const char *value, int overwrit);
 int _unsetenv(const char *name);
-
-/* environ.c */
-char **get_environ();
 
 #endif

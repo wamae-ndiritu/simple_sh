@@ -60,6 +60,7 @@ char *execute_file(char *lineptr, char *argV[])
 	custom_args *argv;
 	char **envr = environ;
 	void (*result)(char **);
+	char *message;
 
 	path = get_env("PATH");
 	if (path == NULL)
@@ -70,36 +71,19 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (NULL);
 	}
-	if (_strcmp(argv->argv[0], "setenv") == 0)
+	result = get_callback(argv->argv[0]);
+	if (result == NULL)
 	{
-		int res;
-
-		res = _setenv(argv->argv[1], argv->argv[2], 1);
-		if (res != 0)
-			return (NULL);
-		free_resources(path, argv);
-		return (filepath);
-	}
-	else if (_strcmp(argv->argv[0], "env") == 0)
-	{
-		print_env(environ);
-		free_resources(path, argv);
-		return (filepath);
-	}
-	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
-	{
-		int res;
-		res = _unsetenv(argv->argv[1]);
-		if (res != 0)
-			perror("unsetenv");
-		free_resources(path, argv);
-		return (filepath);
-	}
-	else
-	{
-		result = get_callback(argv->argv[0]);
-		if (result == NULL)
+		message = execute_set_env(argv->argv);
+		if (message == NULL)
 		{
+			free_resources(path, argv);
+			return (NULL);
+		}
+		else if (_strcmp(message, "Not setenv or unsetenv") == 0)
+		{
+			free_resources(path, argv);
+
 			filepath = find_executable(path, argv->argv[0]);
 			if (filepath == NULL)
 			{
@@ -116,10 +100,11 @@ char *execute_file(char *lineptr, char *argV[])
 			}
 			return (filepath);
 		}
-		result(envr);
 		free_resources(path, argv);
 		return (filepath);
 	}
+	result(envr);
+	free_resources(path, argv);
 	return (filepath);
 }
 

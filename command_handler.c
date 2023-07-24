@@ -6,6 +6,34 @@
 #include "main.h"
 
 
+char *execute_set_env(char **argv)
+{
+	int result;
+	char *command = argv[0];
+	int ac = get_argument_count(argv);
+	char *message = "Not setenv or unsetenv";
+
+	if (_strcmp(command, "setenv") == 0)
+	{
+		if (ac != 3)
+			return (NULL);
+		result = _setenv(argv[1], argv[2], 1);
+		if (result != 0)
+			return (NULL);
+		return (*argv);
+
+	}
+	else if (_strcmp(command, "unsetenv") == 0)
+	{
+		if (ac != 2)
+			return (NULL);
+		result = _unsetenv(argv[1]);
+		if (result != 0)
+			return (NULL);
+		return (*argv);
+	}
+	return (message);
+}
 /**
  * free_exit_mem - frees mem on exit
  * @argv: pointer to argv
