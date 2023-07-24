@@ -50,6 +50,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
  * execute_file - Executes the file specified in lineptr.
  * @lineptr: Pointer to the string representing the file path.
  * @argV: Pointer to the command line arguments passed to main.
+ * @exit_status: stores the exit status of a process
  *
  * Return: The file path on success, or NULL on failure.
  */
