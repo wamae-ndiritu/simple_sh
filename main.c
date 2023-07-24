@@ -83,6 +83,7 @@ char *execute_file(char *lineptr, char *argV[])
 	else if (_strcmp(argv->argv[0], "env") == 0)
 	{
 		print_env(environ);
+		free_resources(path, argv);
 		return (filepath);
 	}
 	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
