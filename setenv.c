@@ -16,7 +16,7 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	char *key = NULL, *val = NULL;
 	char **env, **new_env;
 	char *new_variable = NULL;
-	int len, var_count = 0;
+	int len, var_count = 0, i, j;
 
 	env = get_environ();
 	key = _strdup(name);
@@ -70,7 +70,7 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	while (env[var_count] != NULL)
 		var_count++;
 
-	new_env = realloc(env, (var_count + 2) * sizeof(char *));
+	new_env = malloc((var_count + 2) * sizeof(char *));
 	if (new_env == NULL)
 	{
 		free(key);
@@ -78,10 +78,24 @@ char *_setenv(const char *name, const char *value, int overwrite)
 		return (NULL);
 	}
 
+	for (i = 0; i < var_count; i++)
+	{
+		new_env[i] = _strdup(env[i]);
+		if (new_env[i] == NULL)
+		{
+			for (j = 0; j < var_count; j++)
+				free(new_env[j]);
+			free(new_env);
+			free(key);
+			free(new_variable);
+			return (NULL);
+		}
+	}
 
+
+	new_env[var_count] = new_variable;
+	new_env[var_count + 1] = NULL;
 	environ = new_env;
-	environ[var_count] = new_variable;
-	environ[var_count + 1] = NULL;
 
 	free(key);
 	return (new_variable);
