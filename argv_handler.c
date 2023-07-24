@@ -51,7 +51,7 @@ int count_args(char *lineptr)
  *
  * Return: A pointer to the custom_args struct
  */
-custom_args *init_argv(char *lineptr, env_var *path)
+custom_args *init_argv(char *lineptr)
 {
 	char *token_arg, *lineptr_cpy = NULL;
 	char **argv;
@@ -80,11 +80,6 @@ custom_args *init_argv(char *lineptr, env_var *path)
 		i++;
 	}
 	argv[i] = NULL;
-	if (argv[0] != NULL && _strcmp(argv[0], "exit") == 0)
-	{
-		free(frees);
-		handle_exit(argv, lineptr, lineptr_cpy, path);
-	}
 	frees->lineptr_cpy = lineptr_cpy;
 	frees->argv = argv;
 	return (frees);

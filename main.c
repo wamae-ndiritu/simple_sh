@@ -53,7 +53,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
  *
  * Return: The file path on success, or NULL on failure.
  */
-char *execute_file(char *lineptr, char *argV[])
+char *execute_file(char *lineptr, char *argV[], int exit_status)
 {
 	char *filepath = NULL;
 	env_var *path;
@@ -65,12 +65,13 @@ char *execute_file(char *lineptr, char *argV[])
 	path = get_env("PATH");
 	if (path == NULL)
 		return (NULL);
-	argv = init_argv(lineptr, path);
+	argv = init_argv(lineptr);
 	if (argv == NULL)
 	{
 		free_resources(path, argv);
 		return (NULL);
 	}
+	check_for_exit(argv, path, lineptr, exit_status);
 	result = get_callback(argv->argv[0]);
 	if (result == NULL)
 	{
@@ -85,6 +86,7 @@ char *execute_file(char *lineptr, char *argV[])
 			filepath = find_executable(path, argv->argv[0]);
 			if (filepath == NULL)
 			{
+				exit_status = 127;
 				print_err(argV[0]);
 				free(argv->lineptr_cpy);
 				free(argv->argv);
@@ -160,7 +162,7 @@ int main(int ac, char *argV[])
 		else
 		{
 			lineptr[num_char_read - 1] = '\0';
-			memory = execute_file(lineptr, argV);
+			memory = execute_file(lineptr, argV, exit_status);
 			if (memory == NULL)
 			{
 				exit_status = 1;

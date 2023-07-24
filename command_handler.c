@@ -57,6 +57,14 @@ void free_exit_mem(char **argv, char *lineptr,
 	lineptr = NULL;
 }
 
+void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status)
+{
+	if (_strcmp(argv->argv[0], "exit") == 0)
+	{
+		handle_exit(argv->argv, lineptr, argv->lineptr_cpy, path, exit_status);
+	}
+}	
+
 /**
  * handle_exit - handle the case to exit shell
  * @argv: double pointer to arguments
@@ -66,7 +74,7 @@ void free_exit_mem(char **argv, char *lineptr,
  *
  * Return: Nothing.
  */
-void handle_exit(char **argv, char *lineptr, char *lineptr_cpy, env_var *path)
+void handle_exit(char **argv, char *lineptr, char *lineptr_cpy, env_var *path, int exit_status)
 {
 	int status;
 	int ac = 0, i = 0;
@@ -80,7 +88,7 @@ void handle_exit(char **argv, char *lineptr, char *lineptr_cpy, env_var *path)
 	if (ac == 1)
 	{
 		free_exit_mem(argv, lineptr, lineptr_cpy, path);
-		exit(EXIT_SUCCESS);
+		exit(exit_status);
 	}
 	else if (ac == 2)
 	{
@@ -92,10 +100,10 @@ void handle_exit(char **argv, char *lineptr, char *lineptr_cpy, env_var *path)
 		}
 		else
 		{
-			msg = "Illegal argument to exit\n";
+			msg = "Illegal number to exit\n";
 			write(STDOUT_FILENO, msg, _strlen(msg));
 			free_exit_mem(argv, lineptr, lineptr_cpy, path);
-			exit(2);
+			exit(128);
 		}
 	}
 }

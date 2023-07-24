@@ -49,13 +49,17 @@ ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
 
 /* argv_handler.c */
 int get_argument_count(char **argv);
-custom_args *init_argv(char *lineptr, env_var *path);
+custom_args *init_argv(char *lineptr);
+
 char *str_tok(char *str, char *delim);
+
+/* get_callback.c */
 void (*get_callback(char *command))(char **);
 
 /* command_handler.c */
 char *execute_set_env(char **argv);
-void handle_exit(char **, char *, char *, env_var *);
+void handle_exit(char **, char *, char *, env_var *, int);
+void check_for_exit(custom_args *argv, env_var *path, char *lineptr, int exit_status);
 
 char *_strcat(char *dest, const char *src);
 char *_strcpy(char *dest, const char *src);
