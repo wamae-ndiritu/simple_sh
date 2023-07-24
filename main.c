@@ -70,11 +70,11 @@ char *execute_file(char *lineptr, char *argV[])
 		free_resources(path, argv);
 		return (NULL);
 	}
-	if (strcmp(argv->argv[0], "setenv") == 0)
+	if (_strcmp(argv->argv[0], "setenv") == 0)
 	{
 		char *res;
 
-		res = _setenv(argv->argv[1], argv->argv[2], 1, &my_environ);
+		res = _setenv(argv->argv[1], argv->argv[2], 1);
 		if (res == NULL)
 			return (NULL);
 		free(res);
@@ -86,7 +86,7 @@ char *execute_file(char *lineptr, char *argV[])
 		print_env(my_environ);
 		return (filepath);
 	}
-	else if (strcmp(argv->argv[0], "unsetenv") == 0)
+	else if (_strcmp(argv->argv[0], "unsetenv") == 0)
 	{
 		int res;
 		res = _unsetenv(argv->argv[1]);

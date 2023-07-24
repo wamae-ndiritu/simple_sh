@@ -10,13 +10,14 @@
  * @env: pointer to the environ (external variable)
  * Return: 0 onsuccess, -1 on failure
  */
-char *_setenv(const char *name, const char *value, int overwrite, char ***env)
+char *_setenv(const char *name, const char *value, int overwrite)
 {
 	char *key = NULL, *val = NULL;
-	char **new_env, **current_env;
+	char **env;
 	char *new_variable = NULL;
-	int len, var_count = 0, i = 0;
+	int len, var_count = 0;
 
+	env = environ;
 	key = _strdup(name);
 	val = _strdup(value);
 	len = _strlen(key) + _strlen(val) + 2;
@@ -31,21 +32,20 @@ char *_setenv(const char *name, const char *value, int overwrite, char ***env)
 	_strcat(new_variable, "=");
 	_strcat(new_variable, val);
 	free(val);
-	current_env = *env;
-	while(*current_env != NULL)
+	while(*env != NULL)
 	{
 		char *delim = "=\n";
 		char *token;
 		char *env_cpy;
 		
-		env_cpy = _strdup(*current_env);
+		env_cpy = _strdup(*env);
 		token = str_tok(env_cpy, delim);
 		if (token != NULL && _strcmp(token, key) == 0 && overwrite)
 		{
 			if (overwrite)
 			{
 			printf("--------Variable exist, we are updating--------\n");
-			*current_env = new_variable;
+			*env = new_variable;
 			free(env_cpy);
 			env_cpy = NULL;
 			free(key);
@@ -57,40 +57,30 @@ char *_setenv(const char *name, const char *value, int overwrite, char ***env)
 				free(key);
 				free(new_variable);
 				free(env_cpy);
-				return (*current_env);
+				return (*env);
 			}
 		}
 		free(env_cpy);
 		env_cpy = NULL;
-		current_env++;
+		env++;
 	}
 	printf("---------------Variable does not exist, we are adding it--------\n");
 
-	while ((*env)[var_count] != NULL)
+	while (environ[var_count] != NULL)
 		var_count++;
 
-	new_env = (char **)malloc((var_count + 2) * sizeof(char *));
-	if (new_env == NULL)
+	environ = realloc(environ, (var_count + 2) * sizeof(char *));
+	if (environ == NULL)
 	{
 		free(key);
 		free(new_variable);
 		return (NULL);
 	}
 
-	for (i = 0; i < var_count; i++)
-	{
-		new_env[i] = _strdup((*env)[i]);
-		if (new_env[i] == NULL)
-		{
-			perror("Memory allocation error");
-			exit(1);
-		}
-	}
 
-	new_env[var_count] = new_variable;
-	new_env[var_count + 1] = NULL;
+	environ[var_count] = new_variable;
+	environ[var_count + 1] = NULL;
 
-	*env = new_env;
 	free(key);
 	return (new_variable);
 }
