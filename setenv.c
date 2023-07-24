@@ -14,7 +14,7 @@
 char *_setenv(const char *name, const char *value, int overwrite)
 {
 	char *key = NULL, *val = NULL;
-	char **env;
+	char **env, **new_env;
 	char *new_variable = NULL;
 	int len, var_count = 0;
 
@@ -70,8 +70,8 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	while (env[var_count] != NULL)
 		var_count++;
 
-	env = realloc(env, (var_count + 2) * sizeof(char *));
-	if (env == NULL)
+	new_env = realloc(env, (var_count + 2) * sizeof(char *));
+	if (new_env == NULL)
 	{
 		free(key);
 		free(new_variable);
@@ -79,8 +79,9 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	}
 
 
-	env[var_count] = new_variable;
-	env[var_count + 1] = NULL;
+	environ = new_env;
+	environ[var_count] = new_variable;
+	environ[var_count + 1] = NULL;
 
 	free(key);
 	return (new_variable);
