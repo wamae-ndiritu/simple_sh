@@ -58,7 +58,6 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 	char *filepath = NULL;
 	env_var *path;
 	custom_args *argv;
-	char **envr = environ;
 	void (*result)(char **);
 	char *message;
 
@@ -105,7 +104,7 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 		free_resources(path, argv);
 		return (filepath);
 	}
-	result(envr);
+	result(argv->argv);
 	free_resources(path, argv);
 	return (filepath);
 }
