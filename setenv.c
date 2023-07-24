@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "main.h"
+
 /**
  * _setenv - initializes a new environment variable, or modify existing one
  * @name: pointer the variable whose value is to be set/updated
@@ -17,7 +18,7 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	char *new_variable = NULL;
 	int len, var_count = 0;
 
-	env = environ;
+	env = get_environ();
 	key = _strdup(name);
 	val = _strdup(value);
 	len = _strlen(key) + _strlen(val) + 2;
@@ -66,11 +67,11 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	}
 	printf("---------------Variable does not exist, we are adding it--------\n");
 
-	while (environ[var_count] != NULL)
+	while (env[var_count] != NULL)
 		var_count++;
 
-	environ = realloc(environ, (var_count + 2) * sizeof(char *));
-	if (environ == NULL)
+	env = realloc(env, (var_count + 2) * sizeof(char *));
+	if (env == NULL)
 	{
 		free(key);
 		free(new_variable);
@@ -78,8 +79,8 @@ char *_setenv(const char *name, const char *value, int overwrite)
 	}
 
 
-	environ[var_count] = new_variable;
-	environ[var_count + 1] = NULL;
+	env[var_count] = new_variable;
+	env[var_count + 1] = NULL;
 
 	free(key);
 	return (new_variable);
