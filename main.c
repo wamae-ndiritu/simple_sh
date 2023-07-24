@@ -82,8 +82,6 @@ char *execute_file(char *lineptr, char *argV[])
 		}
 		else if (_strcmp(message, "Not setenv or unsetenv") == 0)
 		{
-			free_resources(path, argv);
-
 			filepath = find_executable(path, argv->argv[0]);
 			if (filepath == NULL)
 			{
