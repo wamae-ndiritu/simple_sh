@@ -5,6 +5,25 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include "main.h"
+
+/**
+ * get_argument_count - counts the number of arguments in the array argv
+ * @argv: pointer to an array of strings
+ * Return: Return argument count
+ */
+
+int get_argument_count(char **argv)
+{
+	int ac = 0;
+
+	while (*argv != NULL)
+	{
+		argv++;
+		ac++;
+	}
+	return (ac);
+}
+
 /**
  * count_args - Counts the number of arguments in a line
  * @lineptr: The input line to process
@@ -32,7 +51,7 @@ int count_args(char *lineptr)
  *
  * Return: A pointer to the custom_args struct
  */
-custom_args *init_argv(char *lineptr, env_var *path)
+custom_args *init_argv(char *lineptr)
 {
 	char *token_arg, *lineptr_cpy = NULL;
 	char **argv;
@@ -45,6 +64,7 @@ custom_args *init_argv(char *lineptr, env_var *path)
 
 	lineptr_cpy = _strdup(lineptr);
 	ac = count_args(lineptr);
+
 	argv = malloc(sizeof(char *) * (ac + 1));
 	if (argv == NULL)
 	{
@@ -60,11 +80,6 @@ custom_args *init_argv(char *lineptr, env_var *path)
 		i++;
 	}
 	argv[i] = NULL;
-	if (argv[0] != NULL && _strcmp(argv[0], "exit") == 0)
-	{
-		free(frees);
-		handle_exit(argv, lineptr, lineptr_cpy, path);
-	}
 	frees->lineptr_cpy = lineptr_cpy;
 	frees->argv = argv;
 	return (frees);
