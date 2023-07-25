@@ -62,7 +62,6 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 	void (*result)(char **);
 	char *message;
 
-	printf("%s\n", lineptr);
 	lines = handle_separator(lineptr);
 	while (*lines != NULL)
 	{

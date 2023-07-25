@@ -91,7 +91,7 @@ custom_args *init_multiple_commands(char *lineptr)
 char **handle_separator(char *lineptr)
 {
 	char *line, *lineptr_cpy = NULL;
-	char **lines;
+	char **lines, **current_line;
 	int lines_count = 0, i = 0;
 
 	lineptr_cpy = _strdup(lineptr);
@@ -118,28 +118,26 @@ char **handle_separator(char *lineptr)
 	}
 
 	lines[i] = NULL;
+	i = 0;
 
-	printf("With spaces\n");
-	while (*lines != NULL)
-	{
-		printf("%s\n", *lines);
-		lines++;
-	}
+	current_line = lines;
 
-	while (*lines != NULL)
+	while (*current_line != NULL)
 	{
 		char no_leading_spaces[1024];
-		removeLeadingSpaces(*lines, no_leading_spaces);
-		*lines = no_leading_spaces;
-		lines++;
+
+		removeLeadingSpaces(*current_line, no_leading_spaces);
+		lines[i] = malloc((_strlen(no_leading_spaces) + 1) * sizeof(char));
+		if (lines[i] == NULL)
+		{
+			free(lines);
+			return (NULL);
+		}
+		_strcpy(lines[i], no_leading_spaces);
+		i++;
+		current_line++;
 	}
 
-	printf("Without spaces\n");
-	while (*lines != NULL)
-	{
-		printf("%s\n", *lines);
-		lines++;
-	}
 	return (lines);
 }
 /**

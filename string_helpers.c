@@ -13,7 +13,7 @@ void removeLeadingSpaces(char *str, char *str1)
 	int index = 0, i = 0, j;
 
 	/* Iterate string until last leading space */
-	while (*str == ' '  || *str == '\t' || *str == '\n')
+	while (str[index] == ' '  || str[index] == '\t' || str[index] == '\n')
 	{
 		index++;
 	}
