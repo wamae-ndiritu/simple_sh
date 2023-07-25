@@ -44,6 +44,96 @@ int count_args(char *lineptr)
 
 	return (ac);
 }
+
+custom_args *init_multiple_commands(char *lineptr)
+{
+	char **lines;
+	int i = 0;
+	custom_args *argv = NULL;
+	pid_t pid;
+
+	lines = handle_separator(lineptr);
+	if (lines == NULL)
+		return (NULL);
+
+	for (i = 0; lines[i] != NULL; i++)
+	{
+		pid = fork();
+		if (pid == 0)
+		{
+			argv = init_argv(lines[i]);
+			if (argv == NULL)
+			{
+				free(lines);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
+				return (NULL);
+			}
+		}
+		else
+		{
+			wait(NULL);
+			printf("Continuing...\n");
+			continue;
+		}
+	}
+	return (argv);
+}
+
+/**
+ * handle_separator - helper function to execute multiple commands separeted by ";"
+ * @lineptr: pointer to the string of command entered from the terminal
+ *
+ * Return: Returns pointer to an array of multiple commands.
+ */
+
+char **handle_separator(char *lineptr)
+{
+	char *line, *lineptr_cpy = NULL;
+	char **lines, **current_line;
+	int lines_count = 0, i = 0;
+
+	lineptr_cpy = _strdup(lineptr);
+	line = str_tok(lineptr_cpy, ";\n");
+	while (line != NULL)
+	{
+		lines_count++;
+		line = str_tok(NULL, ";\n");
+	}
+
+	lines = malloc((lines_count + 1) * sizeof(char *));
+	if (lines == NULL)
+	{
+		free(lineptr_cpy);
+		return (NULL);
+	}
+
+	line = str_tok(lineptr, ";\n");
+	while (line != NULL)
+	{
+		lines[i] = _strdup(line);
+		line = str_tok(NULL, ";\n");
+		i++;
+	}
+
+	lines[i] = NULL;
+	i = 0;
+
+	current_line = lines;
+
+	while (*current_line != NULL)
+	{
+		char no_leading_spaces[1024];
+
+		removeLeadingSpaces(*current_line, no_leading_spaces);
+		_strcpy(lines[i], no_leading_spaces);
+		i++;
+		current_line++;
+	}
+	free(lineptr_cpy);
+	return (lines);
+}
 /**
  * init_argv - Initializes the arguments array and handles callbacks
  * @lineptr: The input line to process
