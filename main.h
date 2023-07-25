@@ -41,6 +41,19 @@ typedef struct Command
 	void (*handler)(char **);
 } Command;
 
+/**
+ * struct mem - structure to store reachable mem on main function
+ * @filepath: pointer to filepath memory -> find_executable
+ * @lines: pointer to an array of commands -> handle_separators
+ *
+ */
+
+typedef struct mem
+{
+	char *filepath;
+	char **lines;
+} mem;
+
 extern char **environ;
 
 void print_env(char **env);
@@ -76,6 +89,8 @@ void print_err(char *program_name);
 void _itoa(int n, char *str, int base);
 
 /* free_memory.c */
+void free_lines(char **lines);
+void free_mem(mem *memory);
 void free_custom_args(custom_args *argv);
 void free_env_var(env_var *path);
 void free_struct(env_var *var, custom_args *argv);

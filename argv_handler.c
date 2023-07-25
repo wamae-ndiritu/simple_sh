@@ -127,17 +127,11 @@ char **handle_separator(char *lineptr)
 		char no_leading_spaces[1024];
 
 		removeLeadingSpaces(*current_line, no_leading_spaces);
-		lines[i] = malloc((_strlen(no_leading_spaces) + 1) * sizeof(char));
-		if (lines[i] == NULL)
-		{
-			free(lines);
-			return (NULL);
-		}
 		_strcpy(lines[i], no_leading_spaces);
 		i++;
 		current_line++;
 	}
-
+	free(lineptr_cpy);
 	return (lines);
 }
 /**

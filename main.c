@@ -53,14 +53,15 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
  *
  * Return: The file path on success, or NULL on failure.
  */
-char *execute_file(char *lineptr, char *argV[], int exit_status)
+mem *execute_file(char *lineptr, char *argV[], int exit_status)
 {
 	char *filepath = NULL;
 	char **lines;
 	env_var *path;
-	custom_args *argv;
+	custom_args *argv = NULL;
 	void (*result)(char **);
 	char *message;
+	mem *memory;
 
 	lines = handle_separator(lineptr);
 	while (*lines != NULL)
@@ -68,9 +69,8 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 		argv = init_argv(*lines);
 		if (argv == NULL)
 		{
-			free(path->key);
-			free(path);
-			return (NULL);
+			lines++;
+			continue;
 		}
 		check_for_exit(argv, lineptr, exit_status);
 		result = get_callback(argv->argv[0]);
@@ -79,8 +79,8 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 			message = execute_set_env(argv->argv);
 			if (message == NULL)
 			{
-				free_struct(path, argv);
-				return (NULL);
+				lines++;
+				continue;
 			}
 			else if (_strcmp(message, "Not setenv or unsetenv") == 0)
 			{
@@ -90,17 +90,11 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 				{
 					exit_status = 127;
 					print_err(argV[0]);
-					free_custom_args(argv);
 					lines++;
 					continue;
 				}
 				argv->argv[0] = filepath;
 				filepath = execute_helper(argv, path, argV);
-				if (filepath == NULL)
-				{
-					free_struct(path, argv);
-					return (NULL);
-				}
 			}
 			lines++;
 			continue;
@@ -110,7 +104,13 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 		lines++;
 		continue;
 	}
-	return (filepath);
+	memory = malloc(sizeof(mem));
+	if (memory == NULL)
+		return (NULL);
+	memory->filepath = filepath;
+	memory->lines = lines;
+	free_struct(path, argv);
+	return (memory);
 }
 
 /**
@@ -123,10 +123,11 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 
 int main(int ac, char *argV[])
 {
-	char *lineptr = NULL, *memory;
+	char *lineptr = NULL;
 	size_t n = 0;
 	ssize_t num_char_read;
 	int exit_status = 0;
+	mem *memory;
 	int interactive_mode = isatty(STDIN_FILENO);
 
 	signal(SIGINT, signal_handler);
@@ -161,7 +162,7 @@ int main(int ac, char *argV[])
 			else if (memory != NULL)
 				exit_status = 0;
 		}
-		free(memory);
+		free_mem(memory);
 		free(lineptr);
 	}
 	return (0);
