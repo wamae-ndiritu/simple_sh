@@ -42,7 +42,6 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 	else
 	{
 		wait(NULL);
-		free_struct(argv, path);
 	}
 	return (filepath);
 }
@@ -69,52 +68,51 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 	lines = handle_separator(lineptr);
 	while (*lines != NULL)
 	{
-		printf("%s\n", *lines);
-		lines++;
-	}
-	argv = init_multiple_commands(lineptr);
-	if (argv == NULL)
-	{
-		free(path->key);
-		free(path);
-		return (NULL);
-	}
-	check_for_exit(argv, path, lineptr, exit_status);
-	result = get_callback(argv->argv[0]);
-	if (result == NULL)
-	{
-		message = execute_set_env(argv->argv);
-		if (message == NULL)
+		argv = init_argv(*lines);
+		if (argv == NULL)
 		{
-			free_resources(path, argv);
+			free(path->key);
+			free(path);
 			return (NULL);
 		}
-		else if (_strcmp(message, "Not setenv or unsetenv") == 0)
+		check_for_exit(argv, path, lineptr, exit_status);
+		result = get_callback(argv->argv[0]);
+		if (result == NULL)
 		{
-			filepath = find_executable(path, argv->argv[0]);
-			if (filepath == NULL)
-			{
-				exit_status = 127;
-				print_err(argV[0]);
-				free(argv->lineptr_cpy);
-				free(argv->argv);
-				free(argv);
-				return (NULL);
-			}
-			argv->argv[0] = filepath;
-			filepath = execute_helper(argv, path, argV);
-			if (filepath == NULL)
+			message = execute_set_env(argv->argv);
+			if (message == NULL)
 			{
 				free_resources(path, argv);
 				return (NULL);
 			}
-			return (filepath);
+			else if (_strcmp(message, "Not setenv or unsetenv") == 0)
+			{
+				filepath = find_executable(path, argv->argv[0]);
+				if (filepath == NULL)
+				{
+					exit_status = 127;
+					print_err(argV[0]);
+					free(argv->lineptr_cpy);
+					free(argv->argv);
+					free(argv);
+					return (NULL);
+				}
+				argv->argv[0] = filepath;
+				filepath = execute_helper(argv, path, argV);
+				if (filepath == NULL)
+				{
+					free_resources(path, argv);
+					return (NULL);
+				}
+			}
+			lines++;
+			continue;
 		}
+		result(argv->argv);
 		free_resources(path, argv);
-		return (filepath);
+		lines++;
+		continue;
 	}
-	result(argv->argv);
-	free_resources(path, argv);
 	return (filepath);
 }
 

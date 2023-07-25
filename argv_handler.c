@@ -48,24 +48,35 @@ int count_args(char *lineptr)
 custom_args *init_multiple_commands(char *lineptr)
 {
 	char **lines;
+	int i = 0;
 	custom_args *argv = NULL;
+	pid_t pid;
 
 	lines = handle_separator(lineptr);
 	if (lines == NULL)
 		return (NULL);
 
-	while (*lines != NULL)
+	for (i = 0; lines[i] != NULL; i++)
 	{
-		argv = init_argv(*lines);
-		if (argv == NULL)
+		pid = fork();
+		if (pid == 0)
 		{
-			free(lines);
-			free(argv->lineptr_cpy);
-			free(argv->argv);
-			free(argv);
-			return (NULL);
+			argv = init_argv(lines[i]);
+			if (argv == NULL)
+			{
+				free(lines);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
+				return (NULL);
+			}
 		}
-		return (argv);
+		else
+		{
+			wait(NULL);
+			printf("Continuing...\n");
+			continue;
+		}
 	}
 	return (argv);
 }
@@ -107,8 +118,6 @@ char **handle_separator(char *lineptr)
 	}
 
 	lines[i] = NULL;
-
-	free(lineptr_cpy);
 	return (lines);
 }
 /**
