@@ -94,7 +94,8 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 					free(argv->lineptr_cpy);
 					free(argv->argv);
 					free(argv);
-					return (NULL);
+					lines++;
+					continue;
 				}
 				argv->argv[0] = filepath;
 				filepath = execute_helper(argv, path, argV);
