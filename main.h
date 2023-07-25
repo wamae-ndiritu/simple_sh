@@ -50,6 +50,8 @@ ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
 /* argv_handler.c */
 int get_argument_count(char **argv);
 custom_args *init_argv(char *lineptr);
+char **handle_separator(char *lineptr);
+custom_args *init_multiple_commands(char *lineptr);
 
 char *str_tok(char *str, char *delim);
 
@@ -82,5 +84,8 @@ void change_directory(char **argv);
 void free_resources(env_var *path, custom_args *argv);
 int _setenv(const char *name, const char *value, int overwrit);
 int _unsetenv(const char *name);
+
+/* string_helpers.c */
+void removeLeadingSpaces(char *str, char *str1);
 
 #endif

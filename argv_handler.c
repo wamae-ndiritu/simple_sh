@@ -44,6 +44,73 @@ int count_args(char *lineptr)
 
 	return (ac);
 }
+
+custom_args *init_multiple_commands(char *lineptr)
+{
+	char **lines;
+	custom_args *argv = NULL;
+
+	lines = handle_separator(lineptr);
+	if (lines == NULL)
+		return (NULL);
+
+	while (*lines != NULL)
+	{
+		argv = init_argv(*lines);
+		if (argv == NULL)
+		{
+			free(lines);
+			free(argv->lineptr_cpy);
+			free(argv->argv);
+			free(argv);
+			return (NULL);
+		}
+		return (argv);
+	}
+	return (argv);
+}
+
+/**
+ * handle_separator - helper function to execute multiple commands separeted by ";"
+ * @lineptr: pointer to the string of command entered from the terminal
+ *
+ * Return: Returns pointer to an array of multiple commands.
+ */
+
+char **handle_separator(char *lineptr)
+{
+	char *line, *lineptr_cpy = NULL;
+	char **lines;
+	int lines_count = 0, i = 0;
+
+	lineptr_cpy = _strdup(lineptr);
+	line = str_tok(lineptr_cpy, ";\n");
+	while (line != NULL)
+	{
+		lines_count++;
+		line = str_tok(NULL, ";\n");
+	}
+
+	lines = malloc(lines_count * sizeof(char *));
+	if (lines == NULL)
+	{
+		free(lineptr_cpy);
+		return (NULL);
+	}
+
+	line = str_tok(lineptr, ";\n");
+	while (line != NULL)
+	{
+		lines[i] = line;
+		line = str_tok(NULL, ";\n");
+		i++;
+	}
+
+	lines[i] = NULL;
+
+	free(lineptr_cpy);
+	return (lines);
+}
 /**
  * init_argv - Initializes the arguments array and handles callbacks
  * @lineptr: The input line to process

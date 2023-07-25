@@ -57,6 +57,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 char *execute_file(char *lineptr, char *argV[], int exit_status)
 {
 	char *filepath = NULL;
+	char **lines;
 	env_var *path;
 	custom_args *argv;
 	void (*result)(char **);
@@ -65,10 +66,17 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 	path = get_env("PATH");
 	if (path == NULL)
 		return (NULL);
-	argv = init_argv(lineptr);
+	lines = handle_separator(lineptr);
+	while (*lines != NULL)
+	{
+		printf("%s\n", *lines);
+		lines++;
+	}
+	argv = init_multiple_commands(lineptr);
 	if (argv == NULL)
 	{
-		free_resources(path, argv);
+		free(path->key);
+		free(path);
 		return (NULL);
 	}
 	check_for_exit(argv, path, lineptr, exit_status);
