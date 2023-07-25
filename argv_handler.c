@@ -118,6 +118,28 @@ char **handle_separator(char *lineptr)
 	}
 
 	lines[i] = NULL;
+
+	printf("With spaces\n");
+	while (*lines != NULL)
+	{
+		printf("%s\n", *lines);
+		lines++;
+	}
+
+	while (*lines != NULL)
+	{
+		char no_leading_spaces[1024];
+		removeLeadingSpaces(*lines, no_leading_spaces);
+		*lines = no_leading_spaces;
+		lines++;
+	}
+
+	printf("Without spaces\n");
+	while (*lines != NULL)
+	{
+		printf("%s\n", *lines);
+		lines++;
+	}
 	return (lines);
 }
 /**
