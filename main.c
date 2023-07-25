@@ -62,9 +62,7 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 	void (*result)(char **);
 	char *message;
 
-	path = get_env("PATH");
-	if (path == NULL)
-		return (NULL);
+	printf("%s\n", lineptr);
 	lines = handle_separator(lineptr);
 	while (*lines != NULL)
 	{
@@ -87,6 +85,7 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 			}
 			else if (_strcmp(message, "Not setenv or unsetenv") == 0)
 			{
+				path = get_env("PATH");
 				filepath = find_executable(path, argv->argv[0]);
 				if (filepath == NULL)
 				{

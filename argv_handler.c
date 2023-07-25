@@ -102,7 +102,7 @@ char **handle_separator(char *lineptr)
 		line = str_tok(NULL, ";\n");
 	}
 
-	lines = malloc(lines_count * sizeof(char *));
+	lines = malloc((lines_count + 1) * sizeof(char *));
 	if (lines == NULL)
 	{
 		free(lineptr_cpy);
