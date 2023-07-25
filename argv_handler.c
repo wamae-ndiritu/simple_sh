@@ -112,7 +112,7 @@ char **handle_separator(char *lineptr)
 	line = str_tok(lineptr, ";\n");
 	while (line != NULL)
 	{
-		lines[i] = line;
+		lines[i] = _strdup(line);
 		line = str_tok(NULL, ";\n");
 		i++;
 	}

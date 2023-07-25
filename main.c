@@ -140,7 +140,7 @@ void free_resources(env_var *path, custom_args *argv)
 
 int main(int ac, char *argV[])
 {
-	char *lineptr, *memory;
+	char *lineptr = NULL, *memory;
 	size_t n = 0;
 	ssize_t num_char_read;
 	int exit_status = 0;
