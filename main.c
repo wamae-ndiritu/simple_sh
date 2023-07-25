@@ -27,7 +27,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 	execve_process = fork();
 	if (execve_process == -1)
 	{
-		free_struct(argv, path);
+		free_struct(path, argv);
 		return (NULL);
 	}
 	else if (execve_process == 0)
@@ -35,7 +35,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 		if (execve(argv->argv[0], argv->argv, NULL) == -1)
 		{
 			print_err(argV[0]);
-			free_struct(argv, path);
+			free_struct(path, argv);
 			return (NULL);
 		}
 	}
@@ -73,14 +73,14 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 			free(path);
 			return (NULL);
 		}
-		check_for_exit(argv, path, lineptr, exit_status);
+		check_for_exit(argv, lineptr, exit_status);
 		result = get_callback(argv->argv[0]);
 		if (result == NULL)
 		{
 			message = execute_set_env(argv->argv);
 			if (message == NULL)
 			{
-				free_resources(path, argv);
+				free_struct(path, argv);
 				return (NULL);
 			}
 			else if (_strcmp(message, "Not setenv or unsetenv") == 0)
@@ -91,9 +91,7 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 				{
 					exit_status = 127;
 					print_err(argV[0]);
-					free(argv->lineptr_cpy);
-					free(argv->argv);
-					free(argv);
+					free_custom_args(argv);
 					lines++;
 					continue;
 				}
@@ -101,7 +99,7 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 				filepath = execute_helper(argv, path, argV);
 				if (filepath == NULL)
 				{
-					free_resources(path, argv);
+					free_struct(path, argv);
 					return (NULL);
 				}
 			}
@@ -109,25 +107,11 @@ char *execute_file(char *lineptr, char *argV[], int exit_status)
 			continue;
 		}
 		result(argv->argv);
-		free_resources(path, argv);
+		free_struct(path, argv);
 		lines++;
 		continue;
 	}
 	return (filepath);
-}
-
-/**
- * free_resources - Frees the allocated resources.
- * @path: Pointer to the env_var structure.
- * @argv: Pointer to the custom_args structure.
- */
-void free_resources(env_var *path, custom_args *argv)
-{
-	free(path->key);
-	free(path);
-	free(argv->lineptr_cpy);
-	free(argv->argv);
-	free(argv);
 }
 
 /**

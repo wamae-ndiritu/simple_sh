@@ -60,9 +60,8 @@ void (*get_callback(char *command))(char **);
 
 /* command_handler.c */
 char *execute_set_env(char **argv);
-void handle_exit(custom_args *, env_var *, char *, int);
-void check_for_exit(custom_args *argv, env_var *path,
-		char *lineptr, int exit_status);
+void handle_exit(custom_args *, char *, int);
+void check_for_exit(custom_args *argv, char *lineptr, int exit_status);
 
 char *_strcat(char *dest, const char *src);
 char *_strcpy(char *dest, const char *src);
@@ -75,13 +74,20 @@ char *get_line_number(void);
 void *_realloc(void *ptr, size_t size);
 void print_err(char *program_name);
 void _itoa(int n, char *str, int base);
-void free_struct(custom_args *argv, env_var *path);
+
+/* free_memory.c */
+void free_custom_args(custom_args *argv);
+void free_env_var(env_var *path);
+void free_struct(env_var *var, custom_args *argv);
+
+/* signals.c */
 void signal_handler(int signum);
+
+/* find_executable.c */
 char *find_path(char *path_cpy, env_var *var, char *filename);
 char *find_executable(env_var *var, char *filename);
 
 void change_directory(char **argv);
-void free_resources(env_var *path, custom_args *argv);
 int _setenv(const char *name, const char *value, int overwrit);
 int _unsetenv(const char *name);
 
