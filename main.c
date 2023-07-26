@@ -145,7 +145,6 @@ int main(int ac, char *argV[])
 	signal(SIGINT, signal_handler);
 	while (1)
 	{
-		/* resetting branch */
 		lineptr = NULL;
 		if (interactive_mode && ac == 1)
 			write(STDOUT_FILENO, "$ ", 2);
