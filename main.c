@@ -27,7 +27,7 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 	execve_process = fork();
 	if (execve_process == -1)
 	{
-		free_struct(path, argv);
+		free_struct(argv, path);
 		return (NULL);
 	}
 	else if (execve_process == 0)
@@ -35,13 +35,14 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
 		if (execve(argv->argv[0], argv->argv, NULL) == -1)
 		{
 			print_err(argV[0]);
-			free_struct(path, argv);
+			free_struct(argv, path);
 			return (NULL);
 		}
 	}
 	else
 	{
 		wait(NULL);
+		free_struct(argv, path);
 	}
 	return (filepath);
 }
@@ -53,64 +54,76 @@ char *execute_helper(custom_args *argv, env_var *path, char *argV[])
  *
  * Return: The file path on success, or NULL on failure.
  */
-mem *execute_file(char *lineptr, char *argV[], int exit_status)
+char *execute_file(char *lineptr, char *argV[], int exit_status)
 {
 	char *filepath = NULL;
-	char **lines;
 	env_var *path;
-	custom_args *argv = NULL;
+	custom_args *argv;
 	void (*result)(char **);
 	char *message;
-	mem *memory;
 
-	lines = handle_separator(lineptr);
-	while (*lines != NULL)
-	{
-		argv = init_argv(*lines);
-		if (argv == NULL)
-		{
-			lines++;
-			continue;
-		}
-		check_for_exit(argv, lineptr, exit_status);
-		result = get_callback(argv->argv[0]);
-		if (result == NULL)
-		{
-			message = execute_set_env(argv->argv);
-			if (message == NULL)
-			{
-				lines++;
-				continue;
-			}
-			else if (_strcmp(message, "Not setenv or unsetenv") == 0)
-			{
-				path = get_env("PATH");
-				filepath = find_executable(path, argv->argv[0]);
-				if (filepath == NULL)
-				{
-					exit_status = 127;
-					print_err(argV[0]);
-					lines++;
-					continue;
-				}
-				argv->argv[0] = filepath;
-				filepath = execute_helper(argv, path, argV);
-			}
-			lines++;
-			continue;
-		}
-		result(argv->argv);
-		free_struct(path, argv);
-		lines++;
-		continue;
-	}
-	memory = malloc(sizeof(mem));
-	if (memory == NULL)
+	path = get_env("PATH");
+	if (path == NULL)
 		return (NULL);
-	memory->filepath = filepath;
-	memory->lines = lines;
-	free_struct(path, argv);
-	return (memory);
+	argv = init_argv(lineptr);
+	if (argv == NULL)
+	{
+		free_resources(path, argv);
+		return (NULL);
+	}
+	check_for_exit(argv, path, lineptr, exit_status);
+	result = get_callback(argv->argv[0]);
+	if (result == NULL)
+	{
+		message = execute_set_env(argv->argv);
+		if (message == NULL)
+		{
+			free_resources(path, argv);
+			return (NULL);
+		}
+		else if (_strcmp(message, "Not setenv or unsetenv") == 0)
+		{
+			filepath = find_executable(path, argv->argv[0]);
+			if (filepath == NULL)
+			{
+				exit_status = 127;
+				print_err(argV[0]);
+				free(path->key);
+				free(path);
+				free(argv->lineptr_cpy);
+				free(argv->argv);
+				free(argv);
+				return (NULL);
+			}
+			argv->argv[0] = filepath;
+			filepath = execute_helper(argv, path, argV);
+			if (filepath == NULL)
+			{
+				free_resources(path, argv);
+				return (NULL);
+			}
+			return (filepath);
+		}
+		free_resources(path, argv);
+		return (filepath);
+	}
+	result(argv->argv);
+	free_resources(path, argv);
+	return (filepath);
+}
+
+/**
+ * free_resources - Frees the allocated resources.
+ * @path: Pointer to the env_var structure.
+ * @argv: Pointer to the custom_args structure.
+ */
+void free_resources(env_var *path, custom_args *argv)
+{
+	free(path->key);
+	free(path);
+	free(argv->lineptr_cpy);
+	free(argv->argv);
+	free(argv);
 }
 
 /**
@@ -123,20 +136,20 @@ mem *execute_file(char *lineptr, char *argV[], int exit_status)
 
 int main(int ac, char *argV[])
 {
-	char *lineptr = NULL;
+	char *lineptr, *memory;
 	size_t n = 0;
 	ssize_t num_char_read;
 	int exit_status = 0;
-	mem *memory;
 	int interactive_mode = isatty(STDIN_FILENO);
 
 	signal(SIGINT, signal_handler);
 	while (1)
 	{
+		/* resetting branch */
 		lineptr = NULL;
 		if (interactive_mode && ac == 1)
 			write(STDOUT_FILENO, "$ ", 2);
-		num_char_read = get_line(&lineptr, &n, stdin);
+		num_char_read = getline(&lineptr, &n, 0);
 		if (num_char_read == -1)
 		{
 			if (interactive_mode)
@@ -151,7 +164,8 @@ int main(int ac, char *argV[])
 		}
 		else
 		{
-			lineptr[num_char_read - 1] = '\0';
+			printf("%s\n", lineptr);
+			/*lineptr[num_char_read - 1] = '\0';*/
 			memory = execute_file(lineptr, argV, exit_status);
 			if (memory == NULL)
 			{
@@ -162,7 +176,7 @@ int main(int ac, char *argV[])
 			else if (memory != NULL)
 				exit_status = 0;
 		}
-		free_mem(memory);
+		free(memory);
 		free(lineptr);
 	}
 	return (0);

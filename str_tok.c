@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include "main.h"
-
 /**
  * str_tok - tokenizes a string
  * @str: pointer to the string
- * @delim: pointer to the delimeter
+ * @delim: pointer to the delimiter
  *
  * Return: returns tokenized string.
  */
-
 char *str_tok(char *str, char *delim)
 {
 	static char *last_token;
 	char *token_start = str ? str : last_token;
 	char *token_end;
+
+	while (token_start != NULL && (*token_start == ' ' || *token_start == '\t'))
+		token_start++;
 
 	if (token_start == NULL || *token_start == '\0')
 		return (NULL);

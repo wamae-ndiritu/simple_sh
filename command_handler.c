@@ -48,12 +48,12 @@ char *execute_set_env(char **argv)
  *
  * Return: Nothing.
  */
-void check_for_exit(custom_args *argv, char *lineptr,
+void check_for_exit(custom_args *argv, env_var *path, char *lineptr,
 		int exit_status)
 {
 	if (_strcmp(argv->argv[0], "exit") == 0)
 	{
-		handle_exit(argv, lineptr, exit_status);
+		handle_exit(argv, path, lineptr, exit_status);
 	}
 }
 
@@ -66,7 +66,7 @@ void check_for_exit(custom_args *argv, char *lineptr,
  *
  * Return: Nothing.
  */
-void handle_exit(custom_args *argv, char *lineptr,
+void handle_exit(custom_args *argv, env_var *path, char *lineptr,
 		int exit_status)
 {
 	int status;
@@ -80,7 +80,7 @@ void handle_exit(custom_args *argv, char *lineptr,
 	}
 	if (ac == 1)
 	{
-		free_custom_args(argv);
+		free_resources(path, argv);
 		free(lineptr);
 		exit(exit_status);
 	}
@@ -89,7 +89,7 @@ void handle_exit(custom_args *argv, char *lineptr,
 		status = _atoi(argv->argv[1]);
 		if (status != 0)
 		{
-			free_custom_args(argv);
+			free_resources(path, argv);
 			free(lineptr);
 			exit(status);
 		}
@@ -97,7 +97,7 @@ void handle_exit(custom_args *argv, char *lineptr,
 		{
 			msg = "Illegal number to exit\n";
 			write(STDOUT_FILENO, msg, _strlen(msg));
-			free_custom_args(argv);
+			free_resources(path, argv);
 			free(lineptr);
 			exit(128);
 		}
