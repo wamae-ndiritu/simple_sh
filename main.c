@@ -146,7 +146,7 @@ int main(int ac, char *argV[])
 		lineptr = NULL;
 		if (interactive_mode && ac == 1)
 			write(STDOUT_FILENO, "$ ", 2);
-		num_char_read = getline(&lineptr, &n, stdin);
+		num_char_read = get_line(&lineptr, &n, stdin);
 		if (num_char_read == -1)
 		{
 			if (interactive_mode)

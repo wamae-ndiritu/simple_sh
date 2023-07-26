@@ -69,7 +69,7 @@ ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
 		return (-1);
 	for (i = pos - bytes_read; i < pos; i++)
 	{
-		if (buf[i] == '\n' || buf[i] == '\t' || buf[i] == '\0')
+		if (buf[i] == '\n' || buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\0')
 		{
 			buf[i] = '\0';  /*Null-terminate the line*/
 			return (i + 1);     /*line_len including \n*/
