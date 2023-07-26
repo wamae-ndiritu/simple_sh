@@ -45,7 +45,7 @@ extern char **environ;
 
 void print_env(char **env);
 env_var *get_env(char *variable);
-ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
+ssize_t get_line(char **lineptr, size_t *n, int fd);
 
 /* argv_handler.c */
 int get_argument_count(char **argv);

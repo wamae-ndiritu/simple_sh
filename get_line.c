@@ -36,53 +36,69 @@ int realloc_buf(char **lineptr, size_t *n, size_t pos)
  * get_line - reads user input
  * @lineptr: pointer to pointer to the buffer to be read
  * @n: pointer to the size of buffer to be read
- * @stream: pointer to the stream, stdin stream
+ * @fd: pointer to the stream, stdin stream
  *
  * Return: returns the length of the line read, or
  *	-1 on error
  */
-ssize_t get_line(char **lineptr, size_t *n, FILE *stream)
+ssize_t get_line(char **lineptr, size_t *n, int fd)
 {
-	static char *buf;
-	ssize_t bytes_read;
-	size_t pos = 0;
-	size_t size, i;
-	int realloc_res;
+	static char buf[BUF_SIZE];
+	size_t pos;
+	static size_t buf_pos = 0;
+	static size_t bytes_in_buf = 0;
+	int c;
 
-	if (*lineptr == NULL)
+	if (*lineptr == NULL || *n == 0)
 	{
 		*lineptr = malloc(BUF_SIZE);
 		if (*lineptr == NULL)
 			return (-1);
 		*n = BUF_SIZE;
 	}
-	buf = *lineptr;
-	size = *n;
-	bytes_read = read(fileno(stream), buf + pos, size - pos);
-	if (bytes_read == -1)
-		return (-1);
-	else if (bytes_read == 0)
-		return (-1);
-	pos += bytes_read;
-	realloc_res = realloc_buf(lineptr, n, pos); /* realloc buf if full */
-	if (realloc_res == -1)
-		return (-1);
-	for (i = pos - bytes_read; i < pos; i++)
+
+	pos = 0;
+	while (1)
 	{
-		if (buf[i] == '\n' || buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\0')
+		if (buf_pos == bytes_in_buf)
 		{
-			buf[i] = '\0';  /*Null-terminate the line*/
-			return (i + 1);     /*line_len including \n*/
+			bytes_in_buf = read(fd, buf, BUF_SIZE);
+			if (bytes_in_buf <= 0)
+			{
+				/* no characters were read */
+				free(*lineptr);
+				*lineptr = NULL;
+				return (-1);
+			}
+			buf_pos = 0;
+		}
+
+		/* copy characters from the buffer to lineptr */
+		c = buf[buf_pos++];
+		(*lineptr)[pos++] = (char)c;
+
+		if (c == '\n')
+		{
+			(*lineptr)[pos -1] = '\0'; /* null-terminate line */
+			return (pos - 1); /* return no of characters read excluding null terminator */
+		}
+
+		/* Resize the buffer if necessary */
+
+		if (pos >= *n - 1)
+		{
+			char *new_lineptr;
+
+			*n *= 2;
+			new_lineptr = realloc(*lineptr, *n);
+			if (new_lineptr == NULL)
+				return (-1);
+			*lineptr = new_lineptr;
 		}
 	}
 
-	if (pos > 0)
-	{
-		buf[pos] = '\0';
-		return (pos);
-	}
+	/* never reached */
 	return (-1);
-
 }
 /**
  * _realloc - Custom realloc function
